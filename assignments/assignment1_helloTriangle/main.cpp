@@ -13,17 +13,21 @@ const int SCREEN_HEIGHT = 720;
 //Vertex shader source
 const char* vertexShaderSource = "#version 330 core\n"
 	"layout (location = 0) in vec3 aPos;\n"
+	"layout (location = 1) in vec4 aColor;\n"
+	"out vec4 Color;\n"
 	"void main()\n"
 	"{\n"
+	"   Color = aColor;\n"
 	"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
 	"}\0";
 
 //Fragment shader source
 const char* fragmentShaderSource = "#version 330 core\n"
 "out vec4 FragColor;\n"
+"in vec4 Color;\n"
 "void main()\n"
 "{\n"
-"   FragColor = vec4(0f, 0.769f, 1.0f, 1.0f);\n"
+"   FragColor = Color;\n"
 "}\n\0";
 
 int main() {
@@ -92,9 +96,9 @@ int main() {
 
 	//Triangle(s)
 	float vertices[] = {
-		-0.5f, -0.5f, 0.0f, //left
-		0.5f, -0.5f, 0.0f,	//right
-		0.0f,  0.5f, 0.0f	//top
+		-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, //left
+		 0.5f, -0.5f, 0.0f,	0.0f, 1.0f, 0.0f, 1.0f, //right
+		 0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f	//top
 	};
 
 	// Time to put it all together
@@ -106,8 +110,13 @@ int main() {
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 	// Could also use glNamedBufferData(VBO, sizeof(vertices), vertices, GL_STATIC_DRAW) instead of the previous two lines
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	//Position
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
+
+	//Color (RGBA)
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)(sizeof(float) * 3));
+	glEnableVertexAttribArray(1);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 

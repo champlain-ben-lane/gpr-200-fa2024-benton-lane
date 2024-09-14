@@ -5,5 +5,5 @@ uniform float uTime = 1.0f;
 uniform vec4 uColor = vec4(1.0);
 void main()
 {
-	FragColor = Color * (sin(uTime) * 5.0 * 0.5 + 0.5);// This is the line that makes the colors go weeeee
+	FragColor = Color * (sin(uTime) * 0.5 + 0.5);// This is the line that makes the colors go weeeee
 }

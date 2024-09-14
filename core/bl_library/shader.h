@@ -9,6 +9,8 @@
 #include <sstream>
 #include <iostream>
 
+//Based on the LearnOpenGL tutorial at this linK: https://tinyurl.com/3kbvfjf7
+
 class Shader
 {
 public:

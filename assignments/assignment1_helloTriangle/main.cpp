@@ -101,7 +101,7 @@ int main() {
 	glDeleteShader(fragmentShader);
 	*/
 
-	Shader ourShader("../assignment1_helloTriangle/assets/vertexShader.vert", "../assignment1_helloTriangle/assets/fragmentShader.frag");
+	Shader ourShader("assets/vertexShader.vert", "assets/fragmentShader.frag");
 
 	//Triangle(s)
 	float vertices[] = {

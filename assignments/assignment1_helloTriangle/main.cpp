@@ -145,8 +145,8 @@ int main() {
 
 		//Drawing happens here!
 		ourShader.use();
-		//int timeLoc = glGetUniformLocation(shaderProgram, "uTime");
-		//glUniform1f(timeLoc, time);
+		int timeLoc = glGetUniformLocation(ourShader.ID, "uTime");
+		glUniform1f(timeLoc, time);
 		glBindVertexArray(VAO);
 
 		//Draw call

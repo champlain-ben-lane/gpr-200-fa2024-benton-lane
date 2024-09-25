@@ -7,6 +7,6 @@ void main()
 {
 	Color = aColor;
 	vec3 pos = aPos;
-	pos.y += sin(uTime * 5.0 + pos.x) / 4.0; // This is the line that makes the triangle bounce up and down
+	//pos.y += sin(uTime * 5.0 + pos.x) / 4.0; // This is the line that makes the triangle bounce up and down
 	gl_Position = vec4(pos.x, pos.y, pos.z, 1.0);
 }

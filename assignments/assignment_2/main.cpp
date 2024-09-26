@@ -207,8 +207,6 @@ int main() {
 
 		//Render the container
 		backgroundShader.use();
-		int timeLoc = glGetUniformLocation(backgroundShader.ID, "uTime");
-		glUniform1f(timeLoc, time);
 		glBindVertexArray(VAO);
 
 		//Draw call
@@ -235,7 +233,7 @@ int main() {
 
 		//Render the container
 		characterShader.use();
-		//int timeLoc = glGetUniformLocation(characterShader.ID, "uTime");
+		int timeLoc = glGetUniformLocation(characterShader.ID, "uTime");
 		glUniform1f(timeLoc, time);
 
 		//Draw call
@@ -243,10 +241,6 @@ int main() {
 
 		glfwSwapBuffers(window);
 	}
-
-	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO_BG);
-	glDeleteBuffers(1, &EBO_BG);
 
 	glfwTerminate();
 

@@ -63,57 +63,12 @@ int main() {
 	};
 
 	// Time to put it all together
-	unsigned int VAO_BG, VAO_FG, VBO_BG, EBO_BG, VBO_FG, EBO_FG;
-	glGenVertexArrays(1, &VAO_BG);
-	glGenVertexArrays(1, &VAO_FG);
+	unsigned int VAO, VBO_BG, EBO_BG, VBO_FG, EBO_FG;
+	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO_BG);
 	glGenBuffers(1, &EBO_BG);
 	glGenBuffers(1, &VBO_FG);
 	glGenBuffers(1, &EBO_FG);
-
-	// bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
-	glBindVertexArray(VAO_BG);
-
-	glBindBuffer(GL_ARRAY_BUFFER, VBO_BG);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(verticesBG), verticesBG, GL_STATIC_DRAW);
-	// Could also use glNamedBufferData(VBO, sizeof(vertices), vertices, GL_STATIC_DRAW) instead of the previous two lines
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO_BG);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indicesBG), indicesBG, GL_STATIC_DRAW);
-
-	// Position info
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-
-	// Color info 
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
-
-	// Texture coordinate info
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-	glEnableVertexAttribArray(2);
-
-	// bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
-	glBindVertexArray(VAO_FG);
-
-	glBindBuffer(GL_ARRAY_BUFFER, VBO_FG);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(verticesFG), verticesFG, GL_STATIC_DRAW);
-	// Could also use glNamedBufferData(VBO, sizeof(vertices), vertices, GL_STATIC_DRAW) instead of the previous two lines
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO_FG);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indicesFG), indicesFG, GL_STATIC_DRAW);
-
-	// Position info
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-
-	// Color info 
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
-
-	// Texture coordinate info
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-	glEnableVertexAttribArray(2);
 
 	// load and create a texture 
 	// -------------------------
@@ -218,6 +173,28 @@ int main() {
 		glClearColor(0.3f, 0.4f, 0.9f, 1.0f); // This is the background color assignment, lovely shade of blue at the moment
 		glClear(GL_COLOR_BUFFER_BIT);
 
+		// bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
+		glBindVertexArray(VAO);
+
+		glBindBuffer(GL_ARRAY_BUFFER, VBO_BG);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(verticesBG), verticesBG, GL_STATIC_DRAW);
+		// Could also use glNamedBufferData(VBO, sizeof(vertices), vertices, GL_STATIC_DRAW) instead of the previous two lines
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO_BG);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indicesBG), indicesBG, GL_STATIC_DRAW);
+
+		// Position info
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(0);
+
+		// Color info 
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+		glEnableVertexAttribArray(1);
+
+		// Texture coordinate info
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+		glEnableVertexAttribArray(2);
+
 		//Drawing happens here!
 
 		// bind textures on corresponding texture units
@@ -232,16 +209,34 @@ int main() {
 		backgroundShader.use();
 		int timeLoc = glGetUniformLocation(backgroundShader.ID, "uTime");
 		glUniform1f(timeLoc, time);
-		glBindVertexArray(VAO_BG);
+		glBindVertexArray(VAO);
 
 		//Draw call
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+		glBindBuffer(GL_ARRAY_BUFFER, VBO_FG);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(verticesFG), verticesFG, GL_STATIC_DRAW);
+		// Could also use glNamedBufferData(VBO, sizeof(vertices), vertices, GL_STATIC_DRAW) instead of the previous two lines
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO_FG);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indicesFG), indicesFG, GL_STATIC_DRAW);
+
+		// Position info
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(0);
+
+		// Color info 
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+		glEnableVertexAttribArray(1);
+
+		// Texture coordinate info
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+		glEnableVertexAttribArray(2);
 
 		//Render the container
 		characterShader.use();
 		//int timeLoc = glGetUniformLocation(characterShader.ID, "uTime");
 		glUniform1f(timeLoc, time);
-		glBindVertexArray(VAO_FG);
 
 		//Draw call
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -249,7 +244,7 @@ int main() {
 		glfwSwapBuffers(window);
 	}
 
-	glDeleteVertexArrays(1, &VAO_BG);
+	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO_BG);
 	glDeleteBuffers(1, &EBO_BG);
 

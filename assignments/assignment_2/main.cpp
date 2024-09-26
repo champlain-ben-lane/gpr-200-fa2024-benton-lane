@@ -205,7 +205,7 @@ int main() {
 	// either set it manually like so:
 	//glUniform1i(glGetUniformLocation(ourShader.ID, "texture1"), 0);
 	// or set it via the texture class
-	characterShader.setInt("texture3", 0);
+	characterShader.setInt("texture3", 2);
 
 	//Render loop
 	while (!glfwWindowShouldClose(window)) {
@@ -225,6 +225,8 @@ int main() {
 		glBindTexture(GL_TEXTURE_2D, texture1);
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, texture2);
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, texture3);
 
 		//Render the container
 		backgroundShader.use();
@@ -234,10 +236,6 @@ int main() {
 
 		//Draw call
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-		// bind textures on corresponding texture units
-		glActiveTexture(GL_TEXTURE3);
-		glBindTexture(GL_TEXTURE_2D, texture3);
 
 		//Render the container
 		characterShader.use();

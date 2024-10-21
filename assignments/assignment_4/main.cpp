@@ -18,13 +18,14 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow* window);
 
 // Screen settings
-const int SCREEN_WIDTH = 1080;
-const int SCREEN_HEIGHT = 720;
+const int SCREEN_WIDTH = 800;
+const int SCREEN_HEIGHT = 600;
 
 // Camera settings
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+glm::vec3 cameraSide = glm::vec3(0.0f, 1.0f, 0.0f);
+glm::vec3 cameraUp = glm::vec3(1.0f, 0.0f, 0.0f);
 
 bool firstMouse = true;
 float yaw = -90.0f;	// yaw is initialized to -90.0 degrees since a yaw of 0.0 results in a direction vector pointing to the right so we initially rotate a bit to the left.
@@ -47,7 +48,7 @@ int main() {
 
 	// glfw window creation
 	// --------------------
-	GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "LearnOpenGL", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Assignment_4", NULL, NULL);
 	if (window == NULL)
 	{
 		std::cout << "Failed to create GLFW window" << std::endl;
@@ -72,8 +73,7 @@ int main() {
 	// -----------------------------
 	glEnable(GL_DEPTH_TEST);
 
-	//Shader backgroundShader("assets/shaders/backgroundShader.vert", "assets/shaders/backgroundShader.frag");
-	Shader characterShader("assets/shaders/characterShader.vert", "assets/shaders/characterShader.frag");
+	Shader cubeShader("assets/shaders/characterShader.vert", "assets/shaders/characterShader.frag");
 
 	// set up vertex data (and buffer(s)) and configure vertex attributes
 	// ------------------------------------------------------------------
@@ -167,14 +167,14 @@ int main() {
 	// load and create some textures 
 	// -------------------------
 
-	Texture texture2("assets/textures/portal_wall_texture.png", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT);
-	Texture texture1("assets/textures/portal_cube.png", GL_NEAREST, GL_REPEAT);
+	Texture texture1("assets/textures/portal_wall_texture.png", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT);
+	Texture texture2("assets/textures/portal_cube.png", GL_NEAREST, GL_REPEAT);
 
 	// tell opengl for each sampler to which texture unit it belongs to (only has to be done once)
 	// -------------------------------------------------------------------------------------------
-	characterShader.use();
-	characterShader.setInt("texture1", 0);
-	characterShader.setInt("texture2", 1);
+	cubeShader.use();
+	cubeShader.setInt("texture1", 0);
+	cubeShader.setInt("texture2", 1);
 
 	//Render loop
 	while (!glfwWindowShouldClose(window)) {
@@ -199,15 +199,15 @@ int main() {
 		texture2.Bind(GL_TEXTURE1);
 
 		// activate shader
-		characterShader.use();
+		cubeShader.use();
 
 		// passing projection matrix to the shader
 		glm::mat4 projection = glm::perspective(glm::radians(fov), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
-		characterShader.setMat4("projection", projection);
+		cubeShader.setMat4("projection", projection);
 
 		// camera/view transformation
-		glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-		characterShader.setMat4("view", view);
+		glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraSide);
+		cubeShader.setMat4("view", view);
 
 		// render C U B E S
 		glBindVertexArray(VAO);
@@ -219,7 +219,7 @@ int main() {
 			//float angle = 20.0f * i;
 			float angle = glfwGetTime() * (25.0f * i) / 2;
 			model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-			characterShader.setMat4("model", model);
+			cubeShader.setMat4("model", model);
 
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
@@ -249,13 +249,19 @@ void processInput(GLFWwindow* window)
 		glfwSetWindowShouldClose(window, true);
 
 	float cameraSpeed = static_cast<float>(2.5 * deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+		cameraSpeed = cameraSpeed * 2;
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		cameraPos += cameraSpeed * cameraFront;
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 		cameraPos -= cameraSpeed * cameraFront;
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraSide)) * cameraSpeed;
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+		cameraPos += glm::normalize(glm::cross(cameraFront, cameraSide)) * cameraSpeed;
+	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
 		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 }
 

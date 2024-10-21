@@ -31,7 +31,7 @@ float yaw = -90.0f;	// yaw is initialized to -90.0 degrees since a yaw of 0.0 re
 float pitch = 0.0f;
 float lastX = 800.0f / 2.0;
 float lastY = 600.0 / 2.0;
-float fov = 45.0f;
+float fov = 60.0f;
 
 // timing
 float deltaTime = 0.0f;	// time between current frame and last frame
@@ -44,18 +44,6 @@ int main() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-	/*printf("Initializing...");
-	if (!glfwInit()) {
-		printf("GLFW failed to init!");
-		return 1;
-	}*/
-
-	/*GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Assignment_4", NULL, NULL);
-	if (window == NULL) {
-		printf("GLFW failed to create window");
-		return 1;
-	}*/
 
 	// glfw window creation
 	// --------------------
@@ -137,16 +125,26 @@ int main() {
 
 	// world space positions of our cubes
 	glm::vec3 cubePositions[] = {
-		glm::vec3(0.0f,  0.0f,  0.0f),
-		glm::vec3(2.0f,  5.0f, -15.0f),
-		glm::vec3(-1.5f, -2.2f, -2.5f),
-		glm::vec3(-3.8f, -2.0f, -12.3f),
-		glm::vec3(2.4f, -0.4f, -3.5f),
-		glm::vec3(-1.7f,  3.0f, -7.5f),
-		glm::vec3(1.3f, -2.0f, -2.5f),
-		glm::vec3(1.5f,  2.0f, -2.5f),
-		glm::vec3(1.5f,  0.2f, -1.5f),
-		glm::vec3(-1.3f,  1.0f, -1.5f)
+		glm::vec3((ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0))),
+		glm::vec3((ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0))),
+		glm::vec3((ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0))),
+		glm::vec3((ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0))),
+		glm::vec3((ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0))),
+		glm::vec3((ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0))),
+		glm::vec3((ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0))),
+		glm::vec3((ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0))),
+		glm::vec3((ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0))),
+		glm::vec3((ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0))),
+		glm::vec3((ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0))),
+		glm::vec3((ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0))),
+		glm::vec3((ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0))),
+		glm::vec3((ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0))),
+		glm::vec3((ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0))),
+		glm::vec3((ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0))),
+		glm::vec3((ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0))),
+		glm::vec3((ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0))),
+		glm::vec3((ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0))),
+		glm::vec3((ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0)))
 	};
 
 	// Time to put it all together
@@ -169,8 +167,8 @@ int main() {
 	// load and create some textures 
 	// -------------------------
 
-	Texture texture1("assets/textures/portal_wall_texture.png", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT);
-	Texture texture2("assets/textures/portal_cube.png", GL_NEAREST, GL_REPEAT);
+	Texture texture2("assets/textures/portal_wall_texture.png", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT);
+	Texture texture1("assets/textures/portal_cube.png", GL_NEAREST, GL_REPEAT);
 
 	// tell opengl for each sampler to which texture unit it belongs to (only has to be done once)
 	// -------------------------------------------------------------------------------------------
@@ -213,12 +211,13 @@ int main() {
 
 		// render C U B E S
 		glBindVertexArray(VAO);
-		for (unsigned int i = 0; i < 10; i++)
+		for (unsigned int i = 0; i < 20; i++)
 		{
 			// calculate the model matrix for each object and pass it to shader before drawing
 			glm::mat4 model = glm::mat4(1.0f);
 			model = glm::translate(model, cubePositions[i]);
-			float angle = 20.0f * i;
+			//float angle = 20.0f * i;
+			float angle = glfwGetTime() * (25.0f * i) / 2;
 			model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
 			characterShader.setMat4("model", model);
 
@@ -315,6 +314,6 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 	fov -= (float)yoffset;
 	if (fov < 1.0f)
 		fov = 1.0f;
-	if (fov > 45.0f)
-		fov = 45.0f;
+	if (fov > 120.0f)
+		fov = 120.0f;
 }

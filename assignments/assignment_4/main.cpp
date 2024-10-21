@@ -24,8 +24,8 @@ const int SCREEN_HEIGHT = 600;
 // Camera settings
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-glm::vec3 cameraSide = glm::vec3(0.0f, 1.0f, 0.0f);
-glm::vec3 cameraUp = glm::vec3(1.0f, 0.0f, 0.0f);
+glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+glm::vec3 cameraSide = glm::vec3(1.0f, 0.0f, 0.0f);
 
 bool firstMouse = true;
 float yaw = -90.0f;	// yaw is initialized to -90.0 degrees since a yaw of 0.0 results in a direction vector pointing to the right so we initially rotate a bit to the left.
@@ -124,28 +124,10 @@ int main() {
 	};
 
 	// world space positions of our cubes
-	glm::vec3 cubePositions[] = {
-		glm::vec3((ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0))),
-		glm::vec3((ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0))),
-		glm::vec3((ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0))),
-		glm::vec3((ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0))),
-		glm::vec3((ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0))),
-		glm::vec3((ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0))),
-		glm::vec3((ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0))),
-		glm::vec3((ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0))),
-		glm::vec3((ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0))),
-		glm::vec3((ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0))),
-		glm::vec3((ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0))),
-		glm::vec3((ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0))),
-		glm::vec3((ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0))),
-		glm::vec3((ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0))),
-		glm::vec3((ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0))),
-		glm::vec3((ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0))),
-		glm::vec3((ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0))),
-		glm::vec3((ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0))),
-		glm::vec3((ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0))),
-		glm::vec3((ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0)),(ew::RandomRange(-7.0, 7.0)))
-	};
+	glm::vec3* cubePositions = new glm::vec3[20];
+	for (int i = 0; i < 20; i++) {
+		cubePositions[i] = glm::vec3((ew::RandomRange(-7.0, 7.0)), (ew::RandomRange(-7.0, 7.0)), (ew::RandomRange(-7.0, 7.0)));
+	}
 
 	// Time to put it all together
 	unsigned int VAO, VBO;
@@ -202,11 +184,11 @@ int main() {
 		cubeShader.use();
 
 		// passing projection matrix to the shader
-		glm::mat4 projection = glm::perspective(glm::radians(fov), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
+		glm::mat4 projection = glm::perspective(glm::radians(fov), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 1000.0f);
 		cubeShader.setMat4("projection", projection);
 
 		// camera/view transformation
-		glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraSide);
+		glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 		cubeShader.setMat4("view", view);
 
 		// render C U B E S
@@ -217,7 +199,7 @@ int main() {
 			glm::mat4 model = glm::mat4(1.0f);
 			model = glm::translate(model, cubePositions[i]);
 			//float angle = 20.0f * i;
-			float angle = glfwGetTime() * (25.0f * i) / 2;
+			float angle = glfwGetTime() * (25.0f * i) / 4;
 			model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
 			cubeShader.setMat4("model", model);
 
@@ -256,13 +238,13 @@ void processInput(GLFWwindow* window)
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 		cameraPos -= cameraSpeed * cameraFront;
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraSide)) * cameraSpeed;
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		cameraPos += glm::normalize(glm::cross(cameraFront, cameraSide)) * cameraSpeed;
-	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
 		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraSide)) * cameraSpeed;
+	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+		cameraPos += glm::normalize(glm::cross(cameraFront, cameraSide)) * cameraSpeed;
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
@@ -311,6 +293,7 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 	front.y = sin(glm::radians(pitch));
 	front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 	cameraFront = glm::normalize(front);
+	cameraSide = glm::normalize(glm::cross(cameraFront, cameraUp));
 }
 
 // glfw: whenever the mouse scroll wheel scrolls, this callback is called

@@ -132,6 +132,8 @@ int main() {
 
 		//Render the container
 		backgroundShader.use();
+		int timeLoc = glGetUniformLocation(backgroundShader.ID, "uTime");
+		glUniform1f(timeLoc, time);
 		glBindVertexArray(VAO);
 
 		//Draw call
@@ -158,7 +160,7 @@ int main() {
 
 		//Render the container
 		characterShader.use();
-		int timeLoc = glGetUniformLocation(characterShader.ID, "uTime");
+		timeLoc = glGetUniformLocation(characterShader.ID, "uTime");
 		glUniform1f(timeLoc, time);
 
 		//Draw call

@@ -27,6 +27,8 @@ glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 glm::vec3 cameraSide = glm::vec3(1.0f, 0.0f, 0.0f);
 
+bool isPerspectiveOn = true;
+
 bool firstMouse = true;
 float yaw = -90.0f;	// yaw is initialized to -90.0 degrees since a yaw of 0.0 results in a direction vector pointing to the right so we initially rotate a bit to the left.
 float pitch = 0.0f;
@@ -74,54 +76,6 @@ int main() {
 	glEnable(GL_DEPTH_TEST);
 
 	Shader cubeShader("assets/shaders/characterShader.vert", "assets/shaders/characterShader.frag");
-
-	// set up vertex data (and buffer(s)) and configure vertex attributes
-	// ------------------------------------------------------------------
-
-	//Info for background vertices and indices
-	//float vertices[] = {
-	//	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f, // nnn 00 = 0
-	//	 0.5f, -0.5f, -0.5f,  1.0f, 0.0f, // pnn 10 = 5
-	//	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // ppn 11 = 4
-	//	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // ppn 11 = 4
-	//	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f, // npn 01 = 6
-	//	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f, // nnn 00 = 0
-
-	//	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // nnp 00 = 1
-	//	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f, // pnp 10 = 7
-	//	 0.5f,  0.5f,  0.5f,  1.0f, 1.0f, // ppp 11 = 3
-	//	 0.5f,  0.5f,  0.5f,  1.0f, 1.0f, // ppp 11 = 3
-	//	-0.5f,  0.5f,  0.5f,  0.0f, 1.0f, // npp 01 = 2
-	//	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // nnp 00 = 1
-
-	//	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // npp 10 = 9
-	//	-0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // npn 11 = 12
-	//	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // nnn 01 = 8
-	//	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // nnn 01 = 8
-	//	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // nnp 00 = 1
-	//	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // npp 10 = 9
-
-	//	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // ppp 10 = 10
-	//	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // ppn 11 = 4
-	//	 0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // pnn 01 = 14
-	//	 0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // pnn 01 = 14
-	//	 0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // pnp 00 = 13
-	//	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // ppp 10 = 10
-
-	//	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // nnn 01 = 8
-	//	 0.5f, -0.5f, -0.5f,  1.0f, 1.0f, // pnn 11 = 11
-	//	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f, // pnp 10 = 7
-	//	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f, // pnp 10 = 7
-	//	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // nnp 00 = 1
-	//	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // nnn 01 = 8
-
-	//	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f, // npn 01 = 6
-	//	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // ppn 11 = 4
-	//	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // ppp 10 = 10
-	//	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // ppp 10 = 10
-	//	-0.5f,  0.5f,  0.5f,  0.0f, 0.0f, // npp 00 = 15
-	//	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f  // npn 01 = 6
-	//};
 
 	float vertices[] = {
 		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f, // nnn 00 = 0
@@ -227,7 +181,15 @@ int main() {
 		cubeShader.use();
 
 		// passing projection matrix to the shader
-		glm::mat4 projection = glm::perspective(glm::radians(fov), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 1000.0f);
+		glm::mat4 projection;
+
+		if (isPerspectiveOn) {
+			projection = glm::perspective(glm::radians(fov), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 1000.0f);
+		}
+		else {
+			projection = glm::ortho(0.0f, 11.0f, 0.0f, 11.0f, 0.1f, 1000.0f);
+		}
+
 		cubeShader.setMat4("projection", projection);
 
 		// camera/view transformation
@@ -241,14 +203,10 @@ int main() {
 			// calculate the model matrix for each object and pass it to shader before drawing
 			glm::mat4 model = glm::mat4(1.0f);
 			model = glm::translate(model, cubePositions[i]);
-			//float angle = 20.0f * i;
 			float angle = glfwGetTime() * (25.0f * i) / 4;
 			model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
 			cubeShader.setMat4("model", model);
-
-			//glDrawArrays(GL_TRIANGLES, 0, 36);
 			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-			glBindVertexArray(0);
 		}
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
@@ -290,6 +248,8 @@ void processInput(GLFWwindow* window)
 		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraSide)) * cameraSpeed;
 	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
 		cameraPos += glm::normalize(glm::cross(cameraFront, cameraSide)) * cameraSpeed;
+	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
+		isPerspectiveOn = !isPerspectiveOn;
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes

@@ -30,25 +30,25 @@ glm::vec3 cameraSide = glm::vec3(1.0f, 0.0f, 0.0f);
 bool isPerspectiveOn = true;
 
 bool firstMouse = true;
-float yaw = -90.0f;	// yaw is initialized to -90.0 degrees since a yaw of 0.0 results in a direction vector pointing to the right so we initially rotate a bit to the left.
+float yaw = -90.0f;	// Yaw is initialized to -90.0 degrees since a yaw of 0.0 results in a direction vector pointing to the right so we initially rotate a bit to the left.
 float pitch = 0.0f;
 float lastX = 800.0f / 2.0;
 float lastY = 600.0 / 2.0;
 float fov = 60.0f;
 
-// timing
-float deltaTime = 0.0f;	// time between current frame and last frame
+// Timing
+float deltaTime = 0.0f;	// Time between current frame and last frame
 float lastFrame = 0.0f;
 
 int main() {
-	// glfw: initialize and configure
+	// GLFW: Initialize and configure
 	// ------------------------------
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	// glfw window creation
+	// GLFW window creation
 	// --------------------
 	GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Assignment_4", NULL, NULL);
 	if (window == NULL)
@@ -68,10 +68,10 @@ int main() {
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetScrollCallback(window, scroll_callback);
 
-	// tell GLFW to capture our mouse
+	// Tell GLFW to grab da mouse
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-	// configure global opengl state
+	// Set up global opengl state
 	// -----------------------------
 	glEnable(GL_DEPTH_TEST);
 
@@ -116,7 +116,7 @@ int main() {
 		10, 15, 6
 	};
 
-	// world space positions of our cubes
+	// World space positions of our cubes
 	glm::vec3* cubePositions = new glm::vec3[20];
 	for (int i = 0; i < 20; i++) {
 		cubePositions[i] = glm::vec3((ew::RandomRange(-7.0, 7.0)), (ew::RandomRange(-7.0, 7.0)), (ew::RandomRange(-7.0, 7.0)));
@@ -136,20 +136,20 @@ int main() {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-	// position attribute
+	// Position attributes
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-	// texture coord attribute
+	// Texture coord attributes
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
 
-	// load and create some textures 
+	// Time to make some textures 
 	// -------------------------
 
 	Texture texture1("assets/textures/portal_wall_texture.png", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT);
 	Texture texture2("assets/textures/portal_cube.png", GL_NEAREST, GL_REPEAT);
 
-	// tell opengl for each sampler to which texture unit it belongs to (only has to be done once)
+	// Tell OpenGL for each sampler to which texture unit it belongs to (only has to be done once)
 	// -------------------------------------------------------------------------------------------
 	cubeShader.use();
 	cubeShader.setInt("texture1", 0);
@@ -158,110 +158,112 @@ int main() {
 	//Render loop
 	while (!glfwWindowShouldClose(window)) {
 
-		// per-frame time logic
+		// Per-frame time logic
 		// --------------------
 		float currentFrame = static_cast<float>(glfwGetTime());
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-		// input
+		// Input processing
 		// -----
 		processInput(window);
 
-		// render
+		// Rendering
 		// ------
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClearColor(0.2f, 0.3f, 0.3f, 1.0f); // Background color
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// bind textures on corresponding texture units
+		// Bind textures on corresponding texture units
 		texture1.Bind(GL_TEXTURE0);
 		texture2.Bind(GL_TEXTURE1);
 
-		// activate shader
+		// Use da shader
 		cubeShader.use();
 
-		// passing projection matrix to the shader
+		// Passing ze projection matrix to ze shader
 		glm::mat4 projection;
 
+		// Switch between perspectives at the fickle whims of the user
 		if (isPerspectiveOn) {
 			projection = glm::perspective(glm::radians(fov), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 1000.0f);
 		}
 		else {
-			projection = glm::ortho(0.0f, 11.0f, 0.0f, 11.0f, 0.1f, 1000.0f);
+			projection = glm::ortho(0.0f, 5.0f, 0.0f, 5.0f, 0.1f, 1000.0f);
 		}
 
 		cubeShader.setMat4("projection", projection);
 
-		// camera/view transformation
+		// Camera/view transformation
 		glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 		cubeShader.setMat4("view", view);
 
-		// render C U B E S
+		// Render C U B E S
 		glBindVertexArray(VAO);
 		for (unsigned int i = 0; i < 20; i++)
 		{
-			// calculate the model matrix for each object and pass it to shader before drawing
+			// Calculate the model matrix for each object and pass it to shader before drawing
 			glm::mat4 model = glm::mat4(1.0f);
 			model = glm::translate(model, cubePositions[i]);
-			float angle = glfwGetTime() * (25.0f * i) / 4;
+			float angle = glfwGetTime() * (25.0f * i) / 4; // Last digit on this line determines rotation speed
 			model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
 			cubeShader.setMat4("model", model);
-			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); // Second argument = number of elements in the indices array
 		}
 
-		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+		// GLFW: Swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		// -------------------------------------------------------------------------------
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
 
-	// de-allocate all resources once they've outlived their purpose:
+	// De-allocate all resources once they've outlived their purpose: NO MEMORY LEAKS!
 	// ------------------------------------------------------------------------
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
+	glDeleteBuffers(1, &EBO);
 
-	// glfw: terminate, clearing all previously allocated GLFW resources.
+	// GLFW: Terminate, clearing all previously allocated GLFW resources.
 	// ------------------------------------------------------------------
 	glfwTerminate();
 	return 0;
 }
 
-// process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
+// Process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
 void processInput(GLFWwindow* window)
 {
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) // Close the program
 		glfwSetWindowShouldClose(window, true);
 
 	float cameraSpeed = static_cast<float>(2.5 * deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) // Moar s p e e d
 		cameraSpeed = cameraSpeed * 2;
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) // Move forward
 		cameraPos += cameraSpeed * cameraFront;
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) // Move backward
 		cameraPos -= cameraSpeed * cameraFront;
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) // Move left
 		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) // Move right
 		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) // Move up
 		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraSide)) * cameraSpeed;
-	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) // Move down
 		cameraPos += glm::normalize(glm::cross(cameraFront, cameraSide)) * cameraSpeed;
-	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) // Flip projection mode
 		isPerspectiveOn = !isPerspectiveOn;
 }
 
-// glfw: whenever the window size changed (by OS or user resize) this callback function executes
+// GLFW: Whenever the window size changed (by OS or user resize) this callback function executes
 // ---------------------------------------------------------------------------------------------
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-	// make sure the viewport matches the new window dimensions; note that width and 
+	// Make sure the viewport matches the new window dimensions; note that width and 
 	// height will be significantly larger than specified on retina displays.
 	glViewport(0, 0, width, height);
 }
 
-// glfw: whenever the mouse moves, this callback is called
+// GLFW: Whenever the mouse moves, this callback is called
 // -------------------------------------------------------
 void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 {
@@ -276,18 +278,18 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 	}
 
 	float xoffset = xpos - lastX;
-	float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+	float yoffset = lastY - ypos; // Reversed since y-coordinates go from bottom to top
 	lastX = xpos;
 	lastY = ypos;
 
-	float sensitivity = 0.1f; // change this value to your liking
+	float sensitivity = 0.1f; // Change this value to your liking
 	xoffset *= sensitivity;
 	yoffset *= sensitivity;
 
 	yaw += xoffset;
 	pitch += yoffset;
 
-	// make sure that when pitch is out of bounds, screen doesn't get flipped
+	// Make sure that when pitch is out of bounds, screen doesn't get flipped
 	if (pitch > 89.0f)
 		pitch = 89.0f;
 	if (pitch < -89.0f)
@@ -301,7 +303,7 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 	cameraSide = glm::normalize(glm::cross(cameraFront, cameraUp));
 }
 
-// glfw: whenever the mouse scroll wheel scrolls, this callback is called
+// GLFW: Whenever the mouse scroll wheel scrolls, this callback is called
 // ----------------------------------------------------------------------
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {

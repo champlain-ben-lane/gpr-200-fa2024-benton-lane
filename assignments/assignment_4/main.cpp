@@ -207,7 +207,7 @@ int main() {
 			projection = glm::perspective(glm::radians(fov), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 1000.0f);
 		}
 		else {
-			projection = glm::ortho(0.0f, 5.0f, 0.0f, 5.0f, 0.1f, 1000.0f);
+			projection = glm::ortho(-(float)SCREEN_WIDTH / 50, (float)SCREEN_WIDTH / 50, -(float)SCREEN_HEIGHT / 50, (float)SCREEN_HEIGHT / 50, 0.1f, 1000.0f);
 		}
 
 		cubeShader.setMat4("projection", projection);

@@ -79,48 +79,87 @@ int main() {
 	// ------------------------------------------------------------------
 
 	//Info for background vertices and indices
+	//float vertices[] = {
+	//	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f, // nnn 00 = 0
+	//	 0.5f, -0.5f, -0.5f,  1.0f, 0.0f, // pnn 10 = 5
+	//	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // ppn 11 = 4
+	//	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // ppn 11 = 4
+	//	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f, // npn 01 = 6
+	//	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f, // nnn 00 = 0
+
+	//	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // nnp 00 = 1
+	//	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f, // pnp 10 = 7
+	//	 0.5f,  0.5f,  0.5f,  1.0f, 1.0f, // ppp 11 = 3
+	//	 0.5f,  0.5f,  0.5f,  1.0f, 1.0f, // ppp 11 = 3
+	//	-0.5f,  0.5f,  0.5f,  0.0f, 1.0f, // npp 01 = 2
+	//	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // nnp 00 = 1
+
+	//	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // npp 10 = 9
+	//	-0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // npn 11 = 12
+	//	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // nnn 01 = 8
+	//	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // nnn 01 = 8
+	//	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // nnp 00 = 1
+	//	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // npp 10 = 9
+
+	//	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // ppp 10 = 10
+	//	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // ppn 11 = 4
+	//	 0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // pnn 01 = 14
+	//	 0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // pnn 01 = 14
+	//	 0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // pnp 00 = 13
+	//	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // ppp 10 = 10
+
+	//	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // nnn 01 = 8
+	//	 0.5f, -0.5f, -0.5f,  1.0f, 1.0f, // pnn 11 = 11
+	//	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f, // pnp 10 = 7
+	//	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f, // pnp 10 = 7
+	//	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // nnp 00 = 1
+	//	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // nnn 01 = 8
+
+	//	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f, // npn 01 = 6
+	//	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // ppn 11 = 4
+	//	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // ppp 10 = 10
+	//	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // ppp 10 = 10
+	//	-0.5f,  0.5f,  0.5f,  0.0f, 0.0f, // npp 00 = 15
+	//	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f  // npn 01 = 6
+	//};
+
 	float vertices[] = {
-		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-		 0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f, // nnn 00 = 0
+		-0.5f, -0.5f, 0.5f,  0.0f, 0.0f,  // nnp 00 = 1
+		-0.5f, 0.5f, 0.5f,  0.0f, 1.0f,  // npp 01 = 2
+		0.5f, 0.5f, 0.5f,  1.0f, 1.0f,  // ppp 11 = 3
+		0.5f, 0.5f, -0.5f,  1.0f, 1.0f,  // ppn 11 = 4
+		0.5f, -0.5f, -0.5f,  1.0f, 0.0f,  // pnn 10 = 5
+		-0.5f, 0.5f, -0.5f,  0.0f, 1.0f,  // npn 01 = 6
+		0.5f, -0.5f, 0.5f,  1.0f, 0.0f,  // pnp 10 = 7
+		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // nnn 01 = 8
+		-0.5f, 0.5f, 0.5f,  1.0f, 0.0f,  // npp 10 = 9
+		0.5f, 0.5f, 0.5f,  1.0f, 0.0f,  // ppp 10 = 10
+		0.5f, -0.5f, -0.5f,  1.0f, 1.0f,  // pnn 11 = 11
+		-0.5f, 0.5f, -0.5f,  1.0f, 1.0f,  // npn 11 = 12
+		0.5f, -0.5f, 0.5f,  0.0f, 0.0f,  // pnp 00 = 13
+		0.5f, -0.5f, -0.5f,  0.0f, 1.0f,  // pnn 01 = 14
+		-0.5f,  0.5f,  0.5f,  0.0f, 0.0f // npp 00 = 15
+	};
 
-		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-		 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-		 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-		-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	unsigned int indices[] = {
+		0, 5, 4,
+		4, 6, 0,
 
-		-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-		-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-		-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		1, 7, 3,
+		3, 2, 1,
 
-		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-		 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		 0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		9, 12, 8,
+		8, 1, 9,
 
-		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		 0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-		 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-		 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		10, 4, 14,
+		14, 13, 10,
 
-		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-		-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+		8, 11, 7,
+		7, 1, 8,
+
+		6, 4, 10,
+		10, 15, 6
 	};
 
 	// world space positions of our cubes
@@ -130,14 +169,18 @@ int main() {
 	}
 
 	// Time to put it all together
-	unsigned int VAO, VBO;
+	unsigned int VAO, VBO, EBO;
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &EBO);
 
 	glBindVertexArray(VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	// position attribute
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
@@ -203,7 +246,9 @@ int main() {
 			model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
 			cubeShader.setMat4("model", model);
 
-			glDrawArrays(GL_TRIANGLES, 0, 36);
+			//glDrawArrays(GL_TRIANGLES, 0, 36);
+			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+			glBindVertexArray(0);
 		}
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)

@@ -1,15 +1,24 @@
+// C++ Stuff
 #include <stdio.h>
 #include <math.h>
 #include <iostream>
+// Winebrenner stuff
 #include <ew/external/glad.h>
 #include <ew/external/stb_image.h>
 #include <ew/ewMath/ewMath.h>
+// GL stuff
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+// Ben stuff
 #include "../core/bl_library/shader.h"
 #include "../core/bl_library/texture.h"
+// IMGUI stuff
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
+
 using namespace std;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -63,6 +72,13 @@ int main() {
 		printf("GLAD Failed to load GL headers");
 		return 1;
 	}
+
+	// AFTER gladLoadGL
+	// Initialize ImGUI
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGui_ImplGlfw_InitForOpenGL(window, true);
+	ImGui_ImplOpenGL3_Init();
 
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 	glfwSetCursorPosCallback(window, mouse_callback);
@@ -209,6 +225,20 @@ int main() {
 			cubeShader.setMat4("model", model);
 			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); // Second argument = number of elements in the indices array
 		}
+
+		// Start drawing ImGUI
+		ImGui_ImplGlfw_NewFrame();
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui::NewFrame();
+
+		// Create a window called Settings
+		ImGui::Begin("Settings");
+		ImGui::Text("Add Controls Here!");
+		ImGui::End();
+
+		// Actually render IMGUI elements using OpenGL
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 		// GLFW: Swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		// -------------------------------------------------------------------------------

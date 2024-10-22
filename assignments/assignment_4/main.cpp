@@ -49,6 +49,9 @@ float fov = 60.0f;
 float deltaTime = 0.0f;	// Time between current frame and last frame
 float lastFrame = 0.0f;
 
+// Number of cubes
+int numberOfCubes = 20;
+
 int main() {
 	// GLFW: Initialize and configure
 	// ------------------------------
@@ -133,8 +136,8 @@ int main() {
 	};
 
 	// World space positions of our cubes
-	glm::vec3* cubePositions = new glm::vec3[20];
-	for (int i = 0; i < 20; i++) {
+	glm::vec3* cubePositions = new glm::vec3[numberOfCubes];
+	for (int i = 0; i < numberOfCubes; i++) {
 		cubePositions[i] = glm::vec3((ew::RandomRange(-7.0, 7.0)), (ew::RandomRange(-7.0, 7.0)), (ew::RandomRange(-7.0, 7.0)));
 	}
 
@@ -215,7 +218,7 @@ int main() {
 
 		// Render C U B E S
 		glBindVertexArray(VAO);
-		for (unsigned int i = 0; i < 20; i++)
+		for (unsigned int i = 0; i < numberOfCubes; i++)
 		{
 			// Calculate the model matrix for each object and pass it to shader before drawing
 			glm::mat4 model = glm::mat4(1.0f);

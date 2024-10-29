@@ -52,9 +52,6 @@ float lastFrame = 0.0f;
 // Lighting
 glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
 
-// Number of cubes
-int numberOfCubes = 20;
-
 int main() {
 	// GLFW: Initialize and configure
 	// ------------------------------
@@ -65,7 +62,7 @@ int main() {
 
 	// GLFW window creation
 	// --------------------
-	GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Assignment_4", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Assignment_5", NULL, NULL);
 	if (window == NULL)
 	{
 		std::cout << "Failed to create GLFW window" << std::endl;
@@ -99,99 +96,80 @@ int main() {
 
 	Shader lightingShader("assets/shaders/basicLighting.vert", "assets/shaders/basicLighting.frag");
 	Shader lightCubeShader("assets/shaders/lightCube.vert", "assets/shaders/lightCube.frag");
-	Shader cubeShader("assets/shaders/characterShader.vert", "assets/shaders/characterShader.frag");
 
+	// set up vertex data (and buffer(s)) and configure vertex attributes
+	// ------------------------------------------------------------------
 	float vertices[] = {
-		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f, // nnn 00 = 0
-		-0.5f, -0.5f, 0.5f,  0.0f, 0.0f,  // nnp 00 = 1
-		-0.5f, 0.5f, 0.5f,  0.0f, 1.0f,  // npp 01 = 2
-		0.5f, 0.5f, 0.5f,  1.0f, 1.0f,  // ppp 11 = 3
-		0.5f, 0.5f, -0.5f,  1.0f, 1.0f,  // ppn 11 = 4
-		0.5f, -0.5f, -0.5f,  1.0f, 0.0f,  // pnn 10 = 5
-		-0.5f, 0.5f, -0.5f,  0.0f, 1.0f,  // npn 01 = 6
-		0.5f, -0.5f, 0.5f,  1.0f, 0.0f,  // pnp 10 = 7
-		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // nnn 01 = 8
-		-0.5f, 0.5f, 0.5f,  1.0f, 0.0f,  // npp 10 = 9
-		0.5f, 0.5f, 0.5f,  1.0f, 0.0f,  // ppp 10 = 10
-		0.5f, -0.5f, -0.5f,  1.0f, 1.0f,  // pnn 11 = 11
-		-0.5f, 0.5f, -0.5f,  1.0f, 1.0f,  // npn 11 = 12
-		0.5f, -0.5f, 0.5f,  0.0f, 0.0f,  // pnp 00 = 13
-		0.5f, -0.5f, -0.5f,  0.0f, 1.0f,  // pnn 01 = 14
-		-0.5f,  0.5f,  0.5f,  0.0f, 0.0f // npp 00 = 15
+		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+		 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+
+		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+
+		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+		-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+		-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+
+		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+		 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+		 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+
+		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+		 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+
+		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+		 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
 	};
 
-	unsigned int indices[] = {
-		0, 5, 4,
-		4, 6, 0,
-
-		1, 7, 3,
-		3, 2, 1,
-
-		9, 12, 8,
-		8, 1, 9,
-
-		10, 4, 14,
-		14, 13, 10,
-
-		8, 11, 7,
-		7, 1, 8,
-
-		6, 4, 10,
-		10, 15, 6
-	};
-
-	// World space positions of our cubes
-	glm::vec3* cubePositions = new glm::vec3[numberOfCubes];
-	for (int i = 0; i < numberOfCubes; i++) {
-		cubePositions[i] = glm::vec3((ew::RandomRange(-7.0, 7.0)), (ew::RandomRange(-7.0, 7.0)), (ew::RandomRange(-7.0, 7.0)));
-	}
-
-	// Time to put it all together for the non-lighting cubes
-	unsigned int VAO, VBO, EBO;
-	glGenVertexArrays(1, &VAO);
+	// first, configure the cube's VAO (and VBO)
+	unsigned int VBO, cubeVAO;
+	glGenVertexArrays(1, &cubeVAO);
 	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
-
-	glBindVertexArray(VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	glBindVertexArray(cubeVAO);
 
-	// Position attributes
+	// position attribute
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-	// Texture coord attributes
+	// normal attribute
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
 
-	// Now time to (try) making a lighting cube
+
+	// second, configure the light's VAO (VBO stays the same; the vertices are the same for the light object which is also a 3D cube)
 	unsigned int lightCubeVAO;
 	glGenVertexArrays(1, &lightCubeVAO);
 	glBindVertexArray(lightCubeVAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	// note that we update the lamp's position attribute's stride to reflect the updated buffer data
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-
-	// Time to make some textures 
-	// -------------------------
-
-	Texture texture1("assets/textures/portal_wall_texture.png", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT);
-	Texture texture2("assets/textures/portal_cube.png", GL_NEAREST, GL_REPEAT);
-
-	// Tell OpenGL for each sampler to which texture unit it belongs to (only has to be done once)
-	// -------------------------------------------------------------------------------------------
-	cubeShader.use();
-	cubeShader.setInt("texture1", 0);
-	cubeShader.setInt("texture2", 1);
 
 	//Render loop
 	while (!glfwWindowShouldClose(window)) {
@@ -211,17 +189,12 @@ int main() {
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f); // Background color
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// Bind textures on corresponding texture units
-		texture1.Bind(GL_TEXTURE0);
-		texture2.Bind(GL_TEXTURE1);
-
-		// Use da shader(s)
-		cubeShader.use();
-
+		// be sure to activate shader when setting uniforms/drawing objects
 		lightingShader.use();
 		lightingShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
 		lightingShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
 		lightingShader.setVec3("lightPos", lightPos);
+
 
 		// Passing ze projection matrix to ze shader
 		glm::mat4 projection;
@@ -234,36 +207,31 @@ int main() {
 			projection = glm::ortho(-(float)SCREEN_WIDTH / 50, (float)SCREEN_WIDTH / 50, -(float)SCREEN_HEIGHT / 50, (float)SCREEN_HEIGHT / 50, 0.1f, 1000.0f);
 		}
 
-		cubeShader.setMat4("projection", projection);
+		lightingShader.setMat4("projection", projection);
 
 		// Camera/view transformation
 		glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-		cubeShader.setMat4("view", view);
+		lightingShader.setMat4("view", view);
 
-		// Render C U B E S
-		glBindVertexArray(VAO);
-		for (unsigned int i = 0; i < numberOfCubes; i++)
-		{
-			// Calculate the model matrix for each object and pass it to shader before drawing
-			glm::mat4 model = glm::mat4(1.0f);
-			model = glm::translate(model, cubePositions[i]);
-			float angle = 10.0f * i;
-			model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-			cubeShader.setMat4("model", model);
-			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); // Second argument = number of elements in the indices array
-		}
+		// world transformation
+		glm::mat4 model = glm::mat4(1.0f);
+		lightingShader.setMat4("model", model);
 
-		// Time to make a light cube
+		// render the cube
+		glBindVertexArray(cubeVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		// also draw the lamp object
 		lightCubeShader.use();
 		lightCubeShader.setMat4("projection", projection);
 		lightCubeShader.setMat4("view", view);
-		glm::mat4 model = glm::mat4(1.0f);
+		model = glm::mat4(1.0f);
 		model = glm::translate(model, lightPos);
-		model = glm::scale(model, glm::vec3(0.2f));
+		model = glm::scale(model, glm::vec3(0.2f)); // a smaller cube
 		lightCubeShader.setMat4("model", model);
 
 		glBindVertexArray(lightCubeVAO);
-		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		// Start drawing ImGUI
 		ImGui_ImplGlfw_NewFrame();
@@ -287,10 +255,9 @@ int main() {
 
 	// De-allocate all resources once they've outlived their purpose: NO MEMORY LEAKS!
 	// ------------------------------------------------------------------------
-	glDeleteVertexArrays(1, &VAO);
+	glDeleteVertexArrays(1, &cubeVAO);
 	glDeleteVertexArrays(1, &lightCubeVAO);
 	glDeleteBuffers(1, &VBO);
-	glDeleteBuffers(1, &EBO);
 
 	// GLFW: Terminate, clearing all previously allocated GLFW resources.
 	// ------------------------------------------------------------------

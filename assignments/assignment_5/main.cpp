@@ -88,7 +88,7 @@ int main() {
 	glfwSetScrollCallback(window, scroll_callback);
 
 	// Tell GLFW to grab da mouse
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
 	// Set up global opengl state
 	// -----------------------------
@@ -290,6 +290,8 @@ void processInput(GLFWwindow* window)
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) // Close the program
 		glfwSetWindowShouldClose(window, true);
 
+
+
 	float cameraSpeed = static_cast<float>(2.5 * deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) // Moar s p e e d
 		cameraSpeed = cameraSpeed * 2;
@@ -322,6 +324,9 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 // -------------------------------------------------------
 void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 {
+	//if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_2) != GLFW_PRESS) // If the mouse isn't being pressed, don't do anything
+	//	return;
+
 	float xpos = static_cast<float>(xposIn);
 	float ypos = static_cast<float>(yposIn);
 
@@ -330,6 +335,17 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 		lastX = xpos;
 		lastY = ypos;
 		firstMouse = false;
+	}
+
+	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_2) == GLFW_RELEASE)
+	{
+		firstMouse = true;
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		return;
+	}
+	else
+	{
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	}
 
 	float xoffset = xpos - lastX;

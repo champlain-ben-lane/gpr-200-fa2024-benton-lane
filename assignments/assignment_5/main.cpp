@@ -27,8 +27,8 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow* window);
 
 // Screen settings
-const int SCREEN_WIDTH = 800;
-const int SCREEN_HEIGHT = 600;
+const int SCREEN_WIDTH = 1080;
+const int SCREEN_HEIGHT = 720;
 
 // Camera settings
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
@@ -51,6 +51,13 @@ float lastFrame = 0.0f;
 
 // Lighting
 glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
+glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
+
+// IMGui Variables
+float ambientStrength = 0.5;
+float diffuseStrength = 0.5;
+float specularStrength = 0.5;
+int shininessStrength = 250;
 
 int main() {
 	// GLFW: Initialize and configure
@@ -76,19 +83,19 @@ int main() {
 		return 1;
 	}
 
+	// Tell GLFW to grab da mouse
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	glfwSetCursorPosCallback(window, mouse_callback);
+	glfwSetScrollCallback(window, scroll_callback);
+
 	// AFTER gladLoadGL
 	// Initialize ImGUI
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL3_Init();
-
-	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-	glfwSetCursorPosCallback(window, mouse_callback);
-	glfwSetScrollCallback(window, scroll_callback);
-
-	// Tell GLFW to grab da mouse
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
 	// Set up global opengl state
 	// -----------------------------
@@ -200,16 +207,16 @@ int main() {
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f); // Background color
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// change the light's position values over time (can be done anywhere in the render loop actually, but try to do it at least before using the light source positions)
-		lightPos.x = 1.0f + sin(glfwGetTime()) * 2.0f;
-		lightPos.y = sin(glfwGetTime() / 2.0f) * 1.0f;
-
 		// be sure to activate shader when setting uniforms/drawing objects
 		lightingShader.use();
 		lightingShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
-		lightingShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
+		lightingShader.setVec3("lightColor", lightColor);
 		lightingShader.setVec3("lightPos", lightPos);
 		lightingShader.setVec3("viewPos", cameraPos);
+		lightingShader.setFloat("ambientStrength", ambientStrength);
+		lightingShader.setFloat("diffuseStrength", diffuseStrength);
+		lightingShader.setFloat("specularStrength", specularStrength);
+		lightingShader.setInt("shininessStrength", shininessStrength);
 
 		// Passing ze projection matrix to ze shader
 		glm::mat4 projection;
@@ -243,6 +250,7 @@ int main() {
 		lightCubeShader.use();
 		lightCubeShader.setMat4("projection", projection);
 		lightCubeShader.setMat4("view", view);
+		lightCubeShader.setVec3("lightColor", lightColor);
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, lightPos);
 		model = glm::scale(model, glm::vec3(0.2f)); // a smaller cube
@@ -258,7 +266,12 @@ int main() {
 
 		// Create a window called Settings
 		ImGui::Begin("Settings");
-		ImGui::Text("Add Controls Here!");
+		ImGui::DragFloat3("Light Position", &lightPos.x, 0.1f);
+		ImGui::ColorEdit3("Light Color", &lightColor.r);
+		ImGui::SliderFloat("Ambient Strength", &ambientStrength, 0.0f, 1.0f);
+		ImGui::SliderFloat("Diffuse Strength", &diffuseStrength, 0.0f, 1.0f);
+		ImGui::SliderFloat("Specular Strength", &specularStrength, 0.0f, 1.0f);
+		ImGui::SliderInt("S H I N I N E S S", &shininessStrength, 2, 1024);
 		ImGui::End();
 
 		// Actually render IMGUI elements using OpenGL

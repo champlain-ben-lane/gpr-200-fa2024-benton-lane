@@ -1,15 +1,16 @@
 #version 330 core
 out vec4 FragColor;
 
-in vec3 Normal;  
 in vec3 FragPos;
 in vec2 TexCoords;
-  
-uniform vec3 lightPos; 
-uniform vec3 viewPos; 
+in vec3 tanLightPos;
+in vec3 tanViewPos;
+in vec3 tanFragPos;
+
 uniform vec3 lightColor;
 uniform vec3 objectColor;
 uniform sampler2D texture1;
+uniform sampler2D normal1;
 uniform float ambientStrength;
 uniform float diffuseStrength;
 uniform float specularStrength;
@@ -21,15 +22,17 @@ void main()
     
     // Texture coords
     vec4 texInfo = texture(texture1, TexCoords);
+    vec3 norm = texture(normal1, TexCoords).rgb; // get normal vector from texture
   	
+    norm = normalize(norm * 2.0 - 1.0);
+
     // diffuse 
-    vec3 lightDir = normalize(lightPos - FragPos);
-    vec3 norm = normalize(Normal);
-    float diff = max(dot(norm, lightDir), 0.0);
+    vec3 lightDir = normalize(tanLightPos - tanFragPos);
+    float diff = max(dot(lightDir, norm), 0.0);
     vec3 diffuse = diffuseStrength * diff * lightColor;
     
     // specular
-    vec3 viewDir = normalize(viewPos - FragPos);
+    vec3 viewDir =  normalize(tanViewPos - tanFragPos);
     //vec3 reflectDir = reflect(-lightDir, norm);
     vec3 halfwayDir = normalize(lightDir + viewDir);
     float spec = pow(max(dot(norm, halfwayDir), 0.0), shininessStrength); // 32 is the shininess param

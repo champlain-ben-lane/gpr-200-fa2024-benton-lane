@@ -47,6 +47,10 @@ public:
 
 	void setMat4(const std::string& name, const glm::mat4& mat) const;
 
+	//Function that manually calculates the tangent normal for normal mapping purposes. 
+	// shouldnt be in shader but code will become deprecated and its not worth a whole class
+	glm::vec3 calculateNormalTangent(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec2 uv1, glm::vec2 uv2, glm::vec2 uv3);
+
 private:
 
 	void checkCompileErrors(unsigned int shader, std::string type);

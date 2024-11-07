@@ -106,49 +106,69 @@ int main() {
 
 	// set up vertex data (and buffer(s)) and configure vertex attributes
 	// ------------------------------------------------------------------
+	glm::vec3 tangents[] = {
+		lightingShader.calculateNormalTangent(glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(0.5f, -0.5f, -0.5f),glm::vec3(0.5f,  0.5f, -0.5f), glm::vec2(0.0f, 0.0f),glm::vec2(1.0f, 0.0f),glm::vec2(1.0f, 1.0f)),
+		lightingShader.calculateNormalTangent(glm::vec3(0.5f,  0.5f, -0.5f), glm::vec3(-0.5f,  0.5f, -0.5f),glm::vec3(-0.5f, -0.5f, -0.5), glm::vec2(1.0f, 1.0f),glm::vec2(0.0f, 1.0f),glm::vec2(0.0f, 0.0f)),
+
+		lightingShader.calculateNormalTangent(glm::vec3(-0.5f, -0.5f,  0.5), glm::vec3(0.5f, -0.5f,  0.5f),glm::vec3(0.5f,  0.5f,  0.5f), glm::vec2(0.0f, 0.0f),glm::vec2(1.0f, 0.0f),glm::vec2(1.0f, 1.0f)),
+		lightingShader.calculateNormalTangent(glm::vec3(0.5f,  0.5f,  0.5f), glm::vec3(-0.5f,  0.5f,  0.5f),glm::vec3(-0.5f, -0.5f,  0.5f), glm::vec2(1.0f, 1.0f),glm::vec2(0.0f, 1.0f),glm::vec2(0.0f, 0.0f)),
+
+		lightingShader.calculateNormalTangent(glm::vec3(-0.5f,  0.5f,  0.5f), glm::vec3(-0.5f,  0.5f, -0.5f),glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec2(1.0f, 0.0f),glm::vec2(1.0f, 1.0f),glm::vec2(0.0f, 1.0f)),
+		lightingShader.calculateNormalTangent(glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(-0.5f, -0.5f,  0.5f),glm::vec3(-0.5f,  0.5f,  0.5f), glm::vec2(0.0f, 1.0f),glm::vec2(0.0f, 0.0f),glm::vec2(1.0f, 0.0f)),
+
+		lightingShader.calculateNormalTangent(glm::vec3(0.5f,  0.5f,  0.5f), glm::vec3(0.5f,  0.5f, -0.5f),glm::vec3(0.5f, -0.5f, -0.5f), glm::vec2(1.0f, 0.0f),glm::vec2(1.0f, 1.0f),glm::vec2(0.0f, 1.0f)),
+		lightingShader.calculateNormalTangent(glm::vec3(0.5f, -0.5f, -0.5f), glm::vec3(0.5f, -0.5f,  0.5f),glm::vec3(0.5f,  0.5f,  0.5f), glm::vec2(0.0f, 1.0f),glm::vec2(0.0f, 0.0f),glm::vec2(1.0f, 0.0f)),
+
+		lightingShader.calculateNormalTangent(glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(0.5f, -0.5f, -0.5f),glm::vec3(0.5f, -0.5f,  0.5f), glm::vec2(0.0f, 1.0f),glm::vec2(1.0f, 1.0f),glm::vec2(1.0f, 0.0f)),
+		lightingShader.calculateNormalTangent(glm::vec3(0.5f, -0.5f,  0.5f), glm::vec3(-0.5f, -0.5f,  0.5f),glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec2(1.0f, 0.0f),glm::vec2(0.0f, 0.0f),glm::vec2(0.0f, 1.0f)),
+
+		lightingShader.calculateNormalTangent(glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec3(0.5f,  0.5f, -0.5f),glm::vec3(0.5f,  0.5f,  0.5f), glm::vec2(0.0f, 1.0f),glm::vec2(1.0f, 1.0f),glm::vec2(1.0f, 0.0f)),
+		lightingShader.calculateNormalTangent(glm::vec3(0.5f,  0.5f,  0.5f), glm::vec3(-0.5f,  0.5f,  0.5f),glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec2(1.0f, 0.0f),glm::vec2(0.0f, 0.0f),glm::vec2(0.0f, 1.0f))
+
+	};
 	float vertices[] = {
-		// Positions          // Normals           // Texture coords
-		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
-		 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 0.0f,
-		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,
-		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,
-		-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
+	   //Positions            Normals              Texture     Normal Tangents
+		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f, tangents[0].x, tangents[0].y,tangents[0].z,
+		 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 0.0f, tangents[0].x, tangents[0].y,tangents[0].z,
+		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f, tangents[0].x, tangents[0].y,tangents[0].z,
+		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f, tangents[1].x, tangents[1].y,tangents[1].z,
+		-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 1.0f, tangents[1].x, tangents[1].y,tangents[1].z,
+		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f, tangents[1].x, tangents[1].y,tangents[1].z,
 
-		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f, 0.0f,
-		 0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f, 1.0f,
-		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f, 1.0f,
-		-0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f, 1.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f, 0.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f, 0.0f, tangents[2].x, tangents[2].y,tangents[2].z,
+		 0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f, 0.0f, tangents[2].x, tangents[2].y,tangents[2].z,
+		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f, 1.0f, tangents[2].x, tangents[2].y,tangents[2].z,
+		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f, 1.0f, tangents[3].x, tangents[3].y,tangents[3].z,
+		-0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f, 1.0f, tangents[3].x, tangents[3].y,tangents[3].z,
+		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f, 0.0f, tangents[3].x, tangents[3].y,tangents[3].z,
 
-		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
-		-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
-		-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
-		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
+		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f, tangents[4].x, tangents[4].y,tangents[4].z,
+		-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 1.0f, tangents[4].x, tangents[4].y,tangents[4].z,
+		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f, tangents[4].x, tangents[4].y,tangents[4].z,
+		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f, tangents[5].x, tangents[5].y,tangents[5].z,
+		-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 0.0f, tangents[5].x, tangents[5].y,tangents[5].z,
+		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f, tangents[5].x, tangents[5].y,tangents[5].z,
 
-		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
-		 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
-		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
-		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
-		 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
+		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, tangents[6].x, tangents[6].y,tangents[6].z,
+		 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, tangents[6].x, tangents[6].y,tangents[6].z,
+		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f, tangents[6].x, tangents[6].y,tangents[6].z,
+		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f, tangents[7].x, tangents[7].y,tangents[7].z,
+		 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 0.0f, tangents[7].x, tangents[7].y,tangents[7].z,
+		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, tangents[7].x, tangents[7].y,tangents[7].z,
 
-		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,
-		 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 1.0f,
-		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f,
-		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 0.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f, tangents[8].x, tangents[8].y,tangents[8].z,
+		 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 1.0f, tangents[8].x, tangents[8].y,tangents[8].z,
+		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f, tangents[8].x, tangents[8].y,tangents[8].z,
+		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f, tangents[9].x, tangents[9].y,tangents[9].z,
+		-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 0.0f, tangents[9].x, tangents[9].y,tangents[9].z,
+		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f, tangents[9].x, tangents[9].y,tangents[9].z,
 
-		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f,
-		 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 1.0f,
-		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
-		-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f,
-		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f
+		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f, tangents[10].x, tangents[10].y,tangents[10].z,
+		 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 1.0f, tangents[10].x, tangents[10].y,tangents[10].z,
+		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f, tangents[10].x, tangents[10].y,tangents[10].z,
+		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f, tangents[11].x, tangents[11].y,tangents[11].z,
+		-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f, tangents[11].x, tangents[11].y,tangents[11].z,
+		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f, tangents[11].x, tangents[11].y,tangents[11].z
 	};
 
 	// first, configure the cube's VAO (and VBO)
@@ -162,22 +182,26 @@ int main() {
 	glBindVertexArray(cubeVAO);
 
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 11 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 11 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 11 * sizeof(float), (void*)(6 * sizeof(float)));
+	glEnableVertexAttribArray(3);
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 11 * sizeof(float), (void*)(8 * sizeof(float)));
 	glBindVertexArray(0);
 
 	// Time to make some textures 
 	// -------------------------
 
 	Texture texture1("assets/textures/portal_wall_texture.png", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT);
+	Texture normal1("assets/textures/14285-normal.png", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT);
 
 	// Tell OpenGL for each sampler to which texture unit it belongs to (only has to be done once)
 	// -------------------------------------------------------------------------------------------
 	lightingShader.use();
 	lightingShader.setInt("texture1", 0);
+	lightingShader.setInt("normal1", 1);
 
 	// second, configure the light's VAO (VBO stays the same; the vertices are the same for the light object which is also a 3D cube)
 	unsigned int lightCubeVAO;
@@ -186,7 +210,7 @@ int main() {
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	// note that we update the lamp's position attribute's stride to reflect the updated buffer data
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 11 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
 	//Render loop
@@ -237,6 +261,7 @@ int main() {
 
 		// world transformation
 		glm::mat4 model = glm::mat4(1.0f);
+		model = glm::rotate(model, (float)glm::radians(glfwGetTime() * 6), glm::vec3(1, 1, 0));
 		lightingShader.setMat4("model", model);
 
 		// render the cube
@@ -244,6 +269,7 @@ int main() {
 
 		// Bind textures on corresponding texture units
 		texture1.Bind(GL_TEXTURE0);
+		normal1.Bind(GL_TEXTURE1);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		// also draw the lamp object

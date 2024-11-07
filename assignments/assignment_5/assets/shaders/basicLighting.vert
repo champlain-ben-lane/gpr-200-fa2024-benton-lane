@@ -18,7 +18,7 @@ uniform vec3 viewPos;
 
 void main()
 {
-    //calcualtes normal matrix for frag shader. inludes normal
+    //calcualtes normal matrix
     mat3 normalMatrix = transpose(inverse(mat3(model)));
     vec3 T = normalize(normalMatrix * aTangent);
     vec3 N = normalize(normalMatrix * aNormal);
@@ -26,7 +26,7 @@ void main()
     vec3 B = cross(N, T);    
     mat3 TBN = transpose(mat3(T, B, N));   
 
-    //calculates lighting elements based on normal matrix
+    //calculates lighting elements based on normal matrix. passed to frag shader
     tanLightPos = TBN * lightPos;
     tanViewPos = TBN * viewPos;
     tanFragPos = TBN * FragPos;

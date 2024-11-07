@@ -24,7 +24,7 @@ void main()
     vec4 texInfo = texture(texture1, TexCoords);
     vec3 norm = texture(normal1, TexCoords).rgb; // get normal vector from texture
   	
-    norm = normalize(norm * 2.0 - 1.0);
+    norm = normalize(norm);
 
     // diffuse 
     vec3 lightDir = normalize(tanLightPos - tanFragPos);
@@ -41,6 +41,7 @@ void main()
     vec4 lightingInfo = vec4((ambient + diffuse + specular), 1.0);
     
     vec4 result = lightingInfo * texInfo;
-    
+    //vec4 result = vec4(norm, 1.0);
+
     FragColor = result;
 } 

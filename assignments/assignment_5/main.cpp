@@ -195,7 +195,7 @@ int main() {
 	// -------------------------
 
 	Texture texture1("assets/textures/portal_wall_texture.png", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT);
-	Texture normal1("assets/textures/14285-normal.png", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT);
+	Texture normal1("assets/textures/alt_normal.jpg", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT);
 
 	// Tell OpenGL for each sampler to which texture unit it belongs to (only has to be done once)
 	// -------------------------------------------------------------------------------------------
@@ -261,7 +261,7 @@ int main() {
 
 		// world transformation
 		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::rotate(model, (float)glm::radians(glfwGetTime() * 6), glm::vec3(1, 1, 0));
+		//model = glm::rotate(model, (float)glm::radians(glfwGetTime() * 6), glm::vec3(1, 1, 0));
 		lightingShader.setMat4("model", model);
 
 		// render the cube

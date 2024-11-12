@@ -19,7 +19,7 @@ add_library(core STATIC ${CORE_SRC} ${CORE_INC} "bl_library/shader.h" "bl_librar
 
 find_package(OpenGL REQUIRED)
 
-target_link_libraries(core PUBLIC IMGUI glm)
+target_link_libraries(core PUBLIC IMGUI glm assimp)
 
 install (TARGETS core DESTINATION lib)
 install (FILES ${CORE_INC} DESTINATION include/core)

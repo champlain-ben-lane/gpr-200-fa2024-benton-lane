@@ -21,6 +21,7 @@ include(external/cpm.cmake)
 include(external/glfw.cmake)
 include(external/imgui.cmake)
 include(external/glm.cmake)
+include(external/assimp.cmake)
 
 add_subdirectory(core)
 add_subdirectory(assignments/assignment1_helloTriangle)

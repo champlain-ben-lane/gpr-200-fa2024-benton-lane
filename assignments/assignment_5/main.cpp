@@ -14,6 +14,7 @@
 // Ben stuff
 #include "../core/bl_library/shader.h"
 #include "../core/bl_library/texture.h"
+#include "../core/bl_library/mesh.h"
 // IMGUI stuff
 #include <imgui.h>
 #include <imgui_impl_glfw.h>

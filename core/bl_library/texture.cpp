@@ -1,6 +1,6 @@
 #include "texture.h"
 
-Texture::Texture(const char* filePath, int filterMode, int wrapMode)
+t::Texture::Texture(const char* filePath, int filterMode, int wrapMode)
 {
 	glGenTextures(1, &m_id);
 	glBindTexture(GL_TEXTURE_2D, m_id); // all upcoming GL_TEXTURE_2D operations now have effect on this texture object
@@ -34,7 +34,7 @@ Texture::Texture(const char* filePath, int filterMode, int wrapMode)
 	stbi_image_free(data);
 }
 
-void Texture::Bind(unsigned int slot)
+void t::Texture::Bind(unsigned int slot)
 {
 	glActiveTexture(slot);
 	glBindTexture(GL_TEXTURE_2D, m_id);

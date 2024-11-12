@@ -199,8 +199,8 @@ int main() {
 	// Time to make some textures 
 	// -------------------------
 
-	Texture texture1("assets/textures/portal_wall_texture.png", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT);
-	Texture normal1("assets/textures/alt_normal.jpg", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT);
+	t::Texture texture1("assets/textures/portal_wall_texture.png", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT);
+	t::Texture normal1("assets/textures/alt_normal.jpg", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT);
 
 	// Tell OpenGL for each sampler to which texture unit it belongs to (only has to be done once)
 	// -------------------------------------------------------------------------------------------

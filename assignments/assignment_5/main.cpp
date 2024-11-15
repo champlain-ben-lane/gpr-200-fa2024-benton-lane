@@ -197,16 +197,20 @@ int main() {
 	glBindVertexArray(0);
 
 	// Time to make some textures 
-	// -------------------------
+	// --------------------------
 
 	t::Texture texture1("assets/textures/portal_wall_texture.png", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT);
 	t::Texture normal1("assets/textures/alt_normal.jpg", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT);
+	t::Texture fireNoise("assets/textures/fire_noise.jpg", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT);
+	t::Texture fireGradient("assets/textures/fire_gradient.jpg", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT);
 
 	// Tell OpenGL for each sampler to which texture unit it belongs to (only has to be done once)
 	// -------------------------------------------------------------------------------------------
 	lightingShader.use();
 	lightingShader.setInt("texture1", 0);
 	lightingShader.setInt("normal1", 1);
+	lightingShader.setInt("noiseTex", 2);
+	lightingShader.setInt("gradientTex", 3);
 
 	// second, configure the light's VAO (VBO stays the same; the vertices are the same for the light object which is also a 3D cube)
 	unsigned int lightCubeVAO;
@@ -275,6 +279,8 @@ int main() {
 		// Bind textures on corresponding texture units
 		texture1.Bind(GL_TEXTURE0);
 		normal1.Bind(GL_TEXTURE1);
+		fireNoise.Bind(GL_TEXTURE2);
+		fireGradient.Bind(GL_TEXTURE3);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		// also draw the lamp object

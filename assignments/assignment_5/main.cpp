@@ -118,7 +118,7 @@ int main() {
 	// Load in models
 	// -----------------------------
 
-	Model testModel("assets/models/Survival_BackPack_2.fbx");
+	Model testModel("assets/models/backpack/backpack.obj");
 
 	// set up vertex data (and buffer(s)) and configure vertex attributes
 	// ------------------------------------------------------------------

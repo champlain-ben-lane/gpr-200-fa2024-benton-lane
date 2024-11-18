@@ -2,17 +2,27 @@
 
 #version 330 core
 
-in vec2 TexCoord;
-in vec3 cameraSide;
-in vec3 cameraUp;
+in vec3 aPos;
+in vec2 aTexCoord;
 
-out vec3 FragPos;
+out vec2 FragPos;
 
-uniform vec3 fireWorldSpace;
+uniform mat4 view;
+uniform mat4 projection;
+uniform vec3 cameraPos;
+uniform vec3 cameraUp;
 uniform vec3 billboardSize;
 
 void main()
 {
-	//FragPos = vec3(fireWorldSpace, cameraSide.x * billboardSize.x, cameraUp.y * billboardSize.y);
-	FragPos = vec3(1.0f);
+    // Calculate the billboard position
+    vec3 billboardPos = cameraPos + cameraUp * aPos.y * billboardSize.y;
+
+    // Calculate the vertex position
+    vec3 vertexPos = billboardPos + cameraUp * aPos.x * billboardSize.x;
+
+    // Transform the vertex position
+    gl_Position = projection * view * vec4(vertexPos, 1.0);
+
+    FragPos = aTexCoord;
 }

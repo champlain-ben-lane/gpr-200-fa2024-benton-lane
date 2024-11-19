@@ -115,7 +115,10 @@ int main() {
 	// Load in models
 	// -----------------------------
 
-	Model testModel("assets/models/backpack/backpack.obj");
+	//Model testModel("assets/models/backpack/backpack.obj");
+	Model testChair("assets/models/chair.fbx");
+	Model testFirepit("assets/models/firepit.fbx");
+	Model testLogs("assets/models/logs.fbx");
 
 	float grassVertices = {
 		//positions
@@ -168,9 +171,9 @@ int main() {
 
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
-		model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
+		model = glm::scale(model, glm::vec3(0.01f, 0.01f, 0.01f));	// it's a bit too big for our scene, so scale it down
 		testShader.setMat4("model", model);
-		testModel.Draw(testShader);
+		testChair.Draw(testShader);
 		// End of test code for model loading
 
 		// Start drawing ImGUI

@@ -111,15 +111,32 @@ int main() {
 	glEnable(GL_DEPTH_TEST);
 
 	Shader testShader("assets/shaders/modelTest.vert", "assets/shaders/modelTest.frag");
+	Shader grassShader("assets/shaders/instancedGrass.vert", "assets/shaders/instancedGrass.frag");
 
 	// Load in models
 	// -----------------------------
 
 	//Model testModel("assets/models/backpack/backpack.obj");
 	Model testChair("assets/models/chair.fbx");
-	Model testFirepit("assets/models/firepit.fbx");
+    Model testFirepit("assets/models/firepit.fbx");
 	Model testLogs("assets/models/logs.fbx");
-	Model testGrass("assets/models/grass.fbx");
+	Model testGrass("assets/models/grass2.fbx");
+
+	//grass instancing work
+	glm::vec2 translations[100];
+	int index = 0;
+	float offset = 0.1f;
+	for (int y = -10; y < 10; y += 2)
+	{
+		for (int x = -10; x < 10; x += 2)
+		{
+			glm::vec2 translation;
+			translation.x = (float)x / 10.0f + offset;
+			translation.y = (float)y / 10.0f + offset;
+			translations[index++] = translation;
+		}
+	}
+
 
 	//Render loop
 	while (!glfwWindowShouldClose(window)) {
@@ -169,9 +186,18 @@ int main() {
 		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
 		model = glm::scale(model, glm::vec3(0.01f, 0.01f, 0.01f));	// it's a bit too big for our scene, so scale it down
 		testShader.setMat4("model", model);
-		//testChair.Draw(testShader);
-		model = glm::scale(model, glm::vec3(10.0f, 10.0f, 10.0f));
-		testGrass.Draw(testShader);
+		testChair.Draw(testShader);
+
+
+		grassShader.use();
+		glm::mat4 grassModel = glm::mat4(1.0f);
+		grassModel = glm::translate(grassModel, glm::vec3(0.0f, 0.0f, 0.0f));
+		grassModel = glm::rotate(grassModel, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		grassModel = glm::scale(grassModel, glm::vec3(1.0f, 0.5f, 2.0f) / 20.0f);
+		grassShader.setMat4("projection", projection);
+		grassShader.setMat4("view", view);
+		grassShader.setMat4("model", grassModel);
+		testGrass.Draw(grassShader);
 		// End of test code for model loading
 
 		// Start drawing ImGUI

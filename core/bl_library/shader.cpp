@@ -120,26 +120,6 @@ void Shader::setMat4(const std::string& name, const glm::mat4& mat) const
 	glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
 }
 
-
-//Function that manually calculates the tangent normal for normal mapping purposes. 
-	// shouldnt be in shader but code will become deprecated and its not worth a whole class
-glm::vec3 Shader::calculateNormalTangent(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec2 uv1, glm::vec2 uv2, glm::vec2 uv3)
-{
-	glm::vec3 edge1 = p2 - p1;
-	glm::vec3 edge2 = p3 - p1;
-	glm::vec2 deltaUV1 = uv2 - uv1;
-	glm::vec2 deltaUV2 = uv3 - uv1;
-
-	float f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
-
-	glm::vec3 tangent;
-	tangent.x = f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
-	tangent.y = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
-	tangent.z = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
-
-	return tangent;
-}
-
 void Shader::checkCompileErrors(unsigned int shader, std::string type)
 {
 	int success;

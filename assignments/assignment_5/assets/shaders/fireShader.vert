@@ -26,5 +26,5 @@ void main()
     // Project the billboard position
     gl_Position = projection * view * vec4(billboardPos, 1.0);
 
-    FragPos = billboardPos.xy;
+    FragPos = billboardPos.xyz;
   }

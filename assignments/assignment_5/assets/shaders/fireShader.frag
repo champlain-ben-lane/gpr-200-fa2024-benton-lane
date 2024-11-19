@@ -27,7 +27,7 @@ void main()
     // fire colors
     vec4 col = vec4(mix(vec3(1.0f, 1.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), step1 - step2), step1);
     
-    col.rgb = mix(.rgb,vec3(1.0f, 0.5f, 0.0f), step2 - step3);
+    col.rgb = mix(col.rgb, vec3(1.0f, 0.5f, 0.0f), step2 - step3);
     
     FragColor = col;
 }

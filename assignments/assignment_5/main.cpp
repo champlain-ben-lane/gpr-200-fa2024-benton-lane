@@ -119,11 +119,7 @@ int main() {
 	Model testChair("assets/models/chair.fbx");
 	Model testFirepit("assets/models/firepit.fbx");
 	Model testLogs("assets/models/logs.fbx");
-
-	float grassVertices = {
-		//positions
-
-	};
+	Model testGrass("assets/models/grass.fbx");
 
 	//Render loop
 	while (!glfwWindowShouldClose(window)) {
@@ -173,7 +169,9 @@ int main() {
 		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
 		model = glm::scale(model, glm::vec3(0.01f, 0.01f, 0.01f));	// it's a bit too big for our scene, so scale it down
 		testShader.setMat4("model", model);
-		testChair.Draw(testShader);
+		//testChair.Draw(testShader);
+		model = glm::scale(model, glm::vec3(10.0f, 10.0f, 10.0f));
+		testGrass.Draw(testShader);
 		// End of test code for model loading
 
 		// Start drawing ImGUI

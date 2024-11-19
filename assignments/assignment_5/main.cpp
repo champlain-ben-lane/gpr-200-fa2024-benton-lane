@@ -108,6 +108,7 @@ int main() {
 
 	Shader lightingShader("assets/shaders/basicLighting.vert", "assets/shaders/basicLighting.frag");
 	Shader lightCubeShader("assets/shaders/lightCube.vert", "assets/shaders/lightCube.frag");
+	Shader fireShader("assets/shaders/fire.vert", "assets/shaders/fire.frag");
 
 	// set up vertex data (and buffer(s)) and configure vertex attributes
 	// ------------------------------------------------------------------
@@ -209,8 +210,10 @@ int main() {
 	lightingShader.use();
 	lightingShader.setInt("texture1", 0);
 	lightingShader.setInt("normal1", 1);
-	lightingShader.setInt("noiseTex", 2);
-	lightingShader.setInt("gradientTex", 3);
+
+	fireShader.use();
+	fireShader.setInt("noiseTex", 2);
+	fireShader.setInt("gradientTex", 3);
 
 	// second, configure the light's VAO (VBO stays the same; the vertices are the same for the light object which is also a 3D cube)
 	unsigned int lightCubeVAO;
@@ -221,6 +224,35 @@ int main() {
 	// note that we update the lamp's position attribute's stride to reflect the updated buffer data
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 11 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
+
+	// Fiyah stuff - Olivia
+	// --------------------------
+
+	// fire vertices
+	float fireVertices[] = {
+		// Positions          Texture Coords
+		-0.5f, 0.5f, 0.0f, 0.0f, 0.0f,
+		0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
+		0.5f, 1.5f, 0.0f, 1.0f, 1.0f,
+		-0.5f, 1.5f, 0.0f, 0.0f, 1.0f,
+	};
+
+	//fire VAO and VBO
+	unsigned int fireVAO, fireVBO;
+
+	glGenVertexArrays(1, &fireVAO);
+	glGenBuffers(1, &fireVBO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, fireVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(fireVertices), fireVertices, GL_STATIC_DRAW);
+
+	glBindVertexArray(fireVAO);
+
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+	glBindVertexArray(0);
 
 	//Render loop
 	while (!glfwWindowShouldClose(window)) {
@@ -279,9 +311,21 @@ int main() {
 		// Bind textures on corresponding texture units
 		texture1.Bind(GL_TEXTURE0);
 		normal1.Bind(GL_TEXTURE1);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		// render the fire quad - Olivia
+		fireShader.use();
+		fireShader.setMat4("projection", projection);
+		fireShader.setMat4("view", view);
+		fireShader.setVec3("cameraPos", cameraPos);
+		fireShader.setVec3("cameraFront", cameraFront);
+		fireShader.setVec3("cameraUp", cameraUp);
+		fireShader.setFloat("deltaTime", deltaTime);
+
+		glBindVertexArray(fireVAO);
 		fireNoise.Bind(GL_TEXTURE2);
 		fireGradient.Bind(GL_TEXTURE3);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
 		// also draw the lamp object
 		lightCubeShader.use();

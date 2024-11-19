@@ -1,28 +1,30 @@
 // billboarding tutorial here: https://www.opengl-tutorial.org/intermediate-tutorials/billboards-particles/billboards/
 
+//made by Olivia
+
 #version 330 core
 
-in vec3 aPos;
-in vec2 aTexCoord;
+layout (location = 0) in vec3 aPos;
+layout (location = 1) in vec2 aTexCoord;
 
 out vec2 FragPos;
 
-uniform mat4 view;
 uniform mat4 projection;
+uniform mat4 view;
 uniform vec3 cameraPos;
+uniform vec3 cameraFront;
 uniform vec3 cameraUp;
-uniform vec3 billboardSize;
 
 void main()
 {
-    // Calculate the billboard position
-    vec3 billboardPos = cameraPos + cameraUp * aPos.y * billboardSize.y;
+    // Calculate the rotation matrix
+    mat4 rotation = rotate(mat4(1.0), cameraFront, cameraUp);
 
-    // Calculate the vertex position
-    vec3 vertexPos = billboardPos + cameraUp * aPos.x * billboardSize.x;
+    // Apply the rotation to the billboard position
+    vec3 billboardPos = (rotation * vec4(aPos, 1.0)).xyz;
 
-    // Transform the vertex position
-    gl_Position = projection * view * vec4(vertexPos, 1.0);
+    // Project the billboard position
+    gl_Position = projection * view * vec4(billboardPos, 1.0);
 
-    FragPos = aTexCoord;
-}
+    FragPos = billboardPos.xy;
+  }

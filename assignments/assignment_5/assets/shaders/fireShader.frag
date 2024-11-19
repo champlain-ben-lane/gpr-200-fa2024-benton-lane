@@ -1,21 +1,23 @@
 // tutorial for fire texture here: https://blog.febucci.com/2019/05/fire-shader/
 // converted tutorial from HLSL to OpenGL
 
+//made by Olivia
+
 #version 330 core
 
 out vec4 FragColor;
 
-in vec2 TexCoord;
-in float deltaTime;
+in vec2 FragPos;
 
+uniform float deltaTime;
 uniform sampler2D noiseTex;
 uniform sampler2D gradientTex;
 
 void main()
 {
 	// apply textures, roll noise
-    float noiseValue = texture(noiseTex, TexCoord - deltaTime * 0.01).r;
-    float gradientValue = texture(gradientTex, TexCoord).r;
+    float noiseValue = texture(noiseTex, FragPos - deltaTime * 0.01).r;
+    float gradientValue = texture(gradientTex, FragPos).r;
     
     // create solid transitions between colors
     float step1 = step(noiseValue, gradientValue);

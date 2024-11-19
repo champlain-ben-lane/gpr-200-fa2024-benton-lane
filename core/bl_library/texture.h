@@ -10,21 +10,22 @@
 #include "../ew/ewMath/ewMath.h"
 #include <GLFW/glfw3.h>
 #include "../glm/glm.hpp"
+namespace t {
+	class Texture
+	{
+	public:
 
-class Texture
-{
-public:
+		Texture(const char* filePath, int filterMode, int wrapMode);
 
-	Texture(const char* filePath, int filterMode, int wrapMode);
+		~Texture() {}
 
-	~Texture() {}
+		void Bind(unsigned int slot); //Bind to a specific texture unit
 
-	void Bind(unsigned int slot); //Bind to a specific texture unit
+	private:
 
-private:
+		unsigned int m_id; //GL texture handle
 
-	unsigned int m_id; //GL texture handle
-
-	int m_width, m_height;
-};
+		int m_width, m_height;
+	};
+}
 #endif

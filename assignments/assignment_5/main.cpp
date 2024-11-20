@@ -108,7 +108,7 @@ int main() {
 
 	Shader lightingShader("assets/shaders/basicLighting.vert", "assets/shaders/basicLighting.frag");
 	Shader lightCubeShader("assets/shaders/lightCube.vert", "assets/shaders/lightCube.frag");
-	Shader fireShader("assets/shaders/fire.vert", "assets/shaders/fire.frag");
+	Shader fireShader("assets/shaders/fireShader.vert", "assets/shaders/fireShader.frag");
 
 	// set up vertex data (and buffer(s)) and configure vertex attributes
 	// ------------------------------------------------------------------
@@ -305,22 +305,26 @@ int main() {
 		//model = glm::rotate(model, (float)glm::radians(glfwGetTime() * 6), glm::vec3(1, 1, 0));
 		lightingShader.setMat4("model", model);
 
+		// view-projection and rotation matrix
+		glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		glm::mat4 VP = projection * view * rotation;
+
 		// render the cube
 		glBindVertexArray(cubeVAO);
 
 		// Bind textures on corresponding texture units
 		texture1.Bind(GL_TEXTURE0);
 		normal1.Bind(GL_TEXTURE1);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		//glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		// render the fire quad - Olivia
 		fireShader.use();
-		fireShader.setMat4("projection", projection);
-		fireShader.setMat4("view", view);
-		fireShader.setVec3("cameraPos", cameraPos);
-		fireShader.setVec3("cameraFront", cameraFront);
-		fireShader.setVec3("cameraUp", cameraUp);
-		fireShader.setFloat("deltaTime", deltaTime);
+		fireShader.use();
+		fireShader.setMat4("VP", VP);
+		fireShader.setVec3("BillboardPos", glm::vec3(0.0f, 0.0f, 0.0f));
+		fireShader.setVec2("BillboardSize", glm::vec2(1.0f, 1.0f));
+		fireShader.setVec3("CameraRight_worldspace", cameraFront);
+		fireShader.setVec3("CameraUp_worldspace", cameraUp);
 
 		glBindVertexArray(fireVAO);
 		fireNoise.Bind(GL_TEXTURE2);

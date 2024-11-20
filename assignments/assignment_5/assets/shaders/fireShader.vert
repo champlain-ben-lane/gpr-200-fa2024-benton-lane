@@ -4,27 +4,23 @@
 
 #version 330 core
 
-layout (location = 0) in vec3 aPos;
-layout (location = 1) in vec2 aTexCoord;
+layout(location = 0) in vec3 fireVertices;
 
 out vec2 FragPos;
 
-uniform mat4 projection;
-uniform mat4 view;
-uniform vec3 cameraPos;
-uniform vec3 cameraFront;
-uniform vec3 cameraUp;
+uniform vec3 CameraRight_worldspace;
+uniform vec3 CameraUp_worldspace;
+uniform mat4 VP;
+uniform vec3 BillboardPos;
+uniform vec2 BillboardSize;
 
-void main()
-{
-    // Calculate the rotation matrix
-    mat4 rotation = rotate(mat4(1.0), cameraFront, cameraUp);
+void main() {
 
-    // Apply the rotation to the billboard position
-    vec3 billboardPos = (rotation * vec4(aPos, 1.0)).xyz;
+    vec3 vertexPosition_worldspace = 
+        BillboardPos 
+        + CameraUp_worldspace * fireVertices.y * BillboardSize.y 
+        + CameraRight_worldspace * fireVertices.x * BillboardSize.x;
 
-    // Project the billboard position
-    gl_Position = projection * view * vec4(billboardPos, 1.0);
-
-    FragPos = billboardPos.xyz;
-  }
+    gl_Position = VP * vec4(vertexPosition_worldspace, 1.0f);
+    FragPos = fireVertices.xy + vec2(0.5, 0.5);
+}

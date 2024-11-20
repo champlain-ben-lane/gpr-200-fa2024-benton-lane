@@ -53,6 +53,7 @@ float fov = 60.0f;
 // Timing
 float deltaTime = 0.0f;	// Time between current frame and last frame
 float lastFrame = 0.0f;
+float timeElapsed = 0.0f;
 
 // Lighting
 glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
@@ -202,8 +203,8 @@ int main() {
 
 	t::Texture texture1("assets/textures/portal_wall_texture.png", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT);
 	t::Texture normal1("assets/textures/alt_normal.jpg", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT);
-	t::Texture fireNoise("assets/textures/fire_noise.jpg", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT);
-	t::Texture fireGradient("assets/textures/fire_gradient.jpg", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT);
+	t::Texture fireNoise("assets/textures/fire_noise.png", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT);
+	t::Texture fireGradient("assets/textures/fire_gradient.png", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT);
 
 	// Tell OpenGL for each sampler to which texture unit it belongs to (only has to be done once)
 	// -------------------------------------------------------------------------------------------
@@ -262,10 +263,13 @@ int main() {
 		float currentFrame = static_cast<float>(glfwGetTime());
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
+		timeElapsed += deltaTime;
 
 		// Input processing
 		// -----
 		processInput(window);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		// Rendering
 		// ------
@@ -315,7 +319,7 @@ int main() {
 		// Bind textures on corresponding texture units
 		texture1.Bind(GL_TEXTURE0);
 		normal1.Bind(GL_TEXTURE1);
-		//glDrawArrays(GL_TRIANGLES, 0, 36);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		// render the fire quad - Olivia
 		fireShader.use();
@@ -325,6 +329,8 @@ int main() {
 		fireShader.setVec2("BillboardSize", glm::vec2(1.0f, 1.0f));
 		fireShader.setVec3("CameraRight_worldspace", cameraFront);
 		fireShader.setVec3("CameraUp_worldspace", cameraUp);
+		fireShader.setFloat("timeElapsed", timeElapsed);
+
 
 		glBindVertexArray(fireVAO);
 		fireNoise.Bind(GL_TEXTURE2);

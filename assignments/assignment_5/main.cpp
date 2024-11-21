@@ -64,6 +64,7 @@ float ambientStrength = 0.5;
 float diffuseStrength = 0.5;
 float specularStrength = 0.5;
 int shininessStrength = 250;
+unsigned int grassCount = 500000;
 
 int main() {
 	// GLFW: Initialize and configure
@@ -123,18 +124,56 @@ int main() {
 	Model testGrass("assets/models/grass2.fbx");
 
 	//grass instancing work
-	glm::vec2 translations[100];
-	int index = 0;
-	float offset = 0.1f;
-	for (int y = -10; y < 10; y += 2)
+	glm::mat4* modelMatrices;
+	modelMatrices = new glm::mat4[grassCount];
+	srand(static_cast<unsigned int>(glfwGetTime())); // initialize random seed
+	for (unsigned int i = 0; i < grassCount; i++)
 	{
-		for (int x = -10; x < 10; x += 2)
-		{
-			glm::vec2 translation;
-			translation.x = (float)x / 10.0f + offset;
-			translation.y = (float)y / 10.0f + offset;
-			translations[index++] = translation;
-		}
+		glm::mat4 model = glm::mat4(1.0f);
+		glm::vec3 displacement = glm::vec3(rand() % 5000 / 100.0f - 25.0f, 0, rand() % 5000 / 100.0f - 25.0f);
+		model = glm::translate(model, displacement);
+
+		float scale = static_cast<float>(rand() % 18 + 8.0);
+		model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(1.0f, 0.5f, 2.0f) / scale);
+
+		float rotAngle = static_cast<float>((rand() % 360));
+		model = glm::rotate(model, rotAngle, glm::vec3(0.0f, 0.0f, 1.0f));
+
+		modelMatrices[i] = model;
+	}
+
+	// configure instanced array
+   // -------------------------
+	unsigned int buffer;
+	glGenBuffers(1, &buffer);
+	glBindBuffer(GL_ARRAY_BUFFER, buffer);
+	glBufferData(GL_ARRAY_BUFFER, grassCount * sizeof(glm::mat4), &modelMatrices[0], GL_STATIC_DRAW);
+
+	// set transformation matrices as an instance vertex attribute (with divisor 1)
+	// note: we're cheating a little by taking the, now publicly declared, VAO of the model's mesh(es) and adding new vertexAttribPointers
+	// normally you'd want to do this in a more organized fashion, but for learning purposes this will do.
+	// -----------------------------------------------------------------------------------------------------------------------------------
+	for (unsigned int i = 0; i < testGrass.meshes.size(); i++)
+	{
+		unsigned int VAO = testGrass.meshes[i].VAO;
+		glBindVertexArray(VAO);
+		// set attribute pointers for matrix (4 times vec4)
+		glEnableVertexAttribArray(3);
+		glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)0);
+		glEnableVertexAttribArray(4);
+		glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(glm::vec4)));
+		glEnableVertexAttribArray(5);
+		glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(2 * sizeof(glm::vec4)));
+		glEnableVertexAttribArray(6);
+		glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(3 * sizeof(glm::vec4)));
+
+		glVertexAttribDivisor(3, 1);
+		glVertexAttribDivisor(4, 1);
+		glVertexAttribDivisor(5, 1);
+		glVertexAttribDivisor(6, 1);
+
+		glBindVertexArray(0);
 	}
 
 
@@ -188,16 +227,16 @@ int main() {
 		testShader.setMat4("model", model);
 		testChair.Draw(testShader);
 
-
+		//grass rendering
 		grassShader.use();
-		glm::mat4 grassModel = glm::mat4(1.0f);
-		grassModel = glm::translate(grassModel, glm::vec3(0.0f, 0.0f, 0.0f));
-		grassModel = glm::rotate(grassModel, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-		grassModel = glm::scale(grassModel, glm::vec3(1.0f, 0.5f, 2.0f) / 20.0f);
 		grassShader.setMat4("projection", projection);
 		grassShader.setMat4("view", view);
-		grassShader.setMat4("model", grassModel);
-		testGrass.Draw(grassShader);
+		for (unsigned int i = 0; i < testGrass.meshes.size(); i++)
+		{
+			glBindVertexArray(testGrass.meshes[i].VAO);
+			glDrawElementsInstanced(GL_TRIANGLES, static_cast<unsigned int>(testGrass.meshes[i].indices.size()), GL_UNSIGNED_INT, 0, grassCount);
+			glBindVertexArray(0);
+		}
 		// End of test code for model loading
 
 		// Start drawing ImGUI

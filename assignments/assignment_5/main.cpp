@@ -64,7 +64,7 @@ float ambientStrength = 0.5;
 float diffuseStrength = 0.5;
 float specularStrength = 0.5;
 int shininessStrength = 250;
-unsigned int grassCount = 500000;
+int grassCount = 2000000;
 
 int main() {
 	// GLFW: Initialize and configure
@@ -231,6 +231,7 @@ int main() {
 		grassShader.use();
 		grassShader.setMat4("projection", projection);
 		grassShader.setMat4("view", view);
+		grassShader.setFloat("time", glfwGetTime());
 		for (unsigned int i = 0; i < testGrass.meshes.size(); i++)
 		{
 			glBindVertexArray(testGrass.meshes[i].VAO);
@@ -252,6 +253,7 @@ int main() {
 		ImGui::SliderFloat("Diffuse Strength", &diffuseStrength, 0.0f, 1.0f);
 		ImGui::SliderFloat("Specular Strength", &specularStrength, 0.0f, 1.0f);
 		ImGui::SliderInt("S H I N I N E S S", &shininessStrength, 2, 1024);
+		ImGui::SliderInt("GRASS", &grassCount, 500000, 20000000);
 		ImGui::End();
 
 		// Actually render IMGUI elements using OpenGL

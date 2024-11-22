@@ -64,7 +64,7 @@ float ambientStrength = 0.5;
 float diffuseStrength = 0.5;
 float specularStrength = 0.5;
 int shininessStrength = 250;
-int grassCount = 2000000;
+int grassCount = 1000000;
 
 int main() {
 	// GLFW: Initialize and configure

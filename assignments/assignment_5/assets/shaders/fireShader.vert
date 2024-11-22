@@ -18,8 +18,8 @@ void main() {
 
     vec3 vertexPosition_worldspace = 
         BillboardPos 
-        + CameraUp_worldspace * fireVertices.y * BillboardSize.y 
-        + CameraRight_worldspace * fireVertices.x * BillboardSize.x;
+        + CameraRight_worldspace * fireVertices.x * BillboardSize.x
+        + CameraUp_worldspace * fireVertices.y * BillboardSize.y;
 
     gl_Position = VP * vec4(vertexPosition_worldspace, 1.0f);
     FragPos = fireVertices.xy + vec2(0.5, 0.5);

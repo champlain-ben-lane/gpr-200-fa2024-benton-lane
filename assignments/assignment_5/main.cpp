@@ -238,6 +238,9 @@ int main() {
 		-0.5f, 1.5f, 0.0f, 0.0f, 1.0f,
 	};
 
+	glm::vec3 firePos(0.0f, 0.0f, 0.0f);
+	glm::vec3 fireJitter = firePos;
+
 	//fire VAO and VBO
 	unsigned int fireVAO, fireVBO;
 
@@ -280,7 +283,7 @@ int main() {
 		lightingShader.use();
 		lightingShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
 		lightingShader.setVec3("lightColor", lightColor);
-		lightingShader.setVec3("lightPos", lightPos);
+		lightingShader.setVec3("lightPos", fireJitter);
 		lightingShader.setVec3("viewPos", cameraPos);
 		lightingShader.setFloat("ambientStrength", ambientStrength);
 		lightingShader.setFloat("diffuseStrength", diffuseStrength);
@@ -325,7 +328,7 @@ int main() {
 		fireShader.use();
 		fireShader.use();
 		fireShader.setMat4("VP", VP);
-		fireShader.setVec3("BillboardPos", glm::vec3(0.0f, 0.0f, 0.0f));
+		fireShader.setVec3("BillboardPos", firePos);
 		fireShader.setVec2("BillboardSize", glm::vec2(1.0f, 1.0f));
 		fireShader.setVec3("CameraRight_worldspace", cameraFront);
 		fireShader.setVec3("CameraUp_worldspace", cameraUp);
@@ -336,6 +339,9 @@ int main() {
 		fireNoise.Bind(GL_TEXTURE2);
 		fireGradient.Bind(GL_TEXTURE3);
 		glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+		// add fire jitter (offset to firePos so light flickers)
+		fireJitter = vec3(sin(sin(fireJitter.x) + 1), sin(sin(fireJitter.y) + 3) + 2, sin(sin(fireJitter.z) - 3) + 1);
 
 		// also draw the lamp object
 		lightCubeShader.use();

@@ -59,11 +59,20 @@ float timeElapsed = 0.0f;
 glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
 glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
 
+
+// Fire Variables
+glm::vec3 firePos(0.0f, 0.0f, 0.0f);
+glm::vec3 fireColor(1.0f, 0.7f, 0.3f);
+glm::vec3 fireJitter = firePos;
+float fireSin1;
+float fireSin2;
+
 // IMGui Variables
 float ambientStrength = 0.5;
 float diffuseStrength = 0.5;
 float specularStrength = 0.5;
 int shininessStrength = 250;
+float flickerStrength = 0.5;
 
 int main() {
 	// GLFW: Initialize and configure
@@ -238,9 +247,6 @@ int main() {
 		-0.5f, 1.5f, 0.0f, 0.0f, 1.0f,
 	};
 
-	glm::vec3 firePos(0.0f, 0.0f, 0.0f);
-	glm::vec3 fireJitter = firePos;
-
 	//fire VAO and VBO
 	unsigned int fireVAO, fireVBO;
 
@@ -282,7 +288,7 @@ int main() {
 		// be sure to activate shader when setting uniforms/drawing objects
 		lightingShader.use();
 		lightingShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
-		lightingShader.setVec3("lightColor", lightColor);
+		lightingShader.setVec3("lightColor", fireColor);
 		lightingShader.setVec3("lightPos", fireJitter);
 		lightingShader.setVec3("viewPos", cameraPos);
 		lightingShader.setFloat("ambientStrength", ambientStrength);
@@ -341,7 +347,11 @@ int main() {
 		glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
 		// add fire jitter (offset to firePos so light flickers)
-		fireJitter = vec3(sin(sin(fireJitter.x) + 1), sin(sin(fireJitter.y) + 3) + 2, sin(sin(fireJitter.z) - 3) + 1);
+		fireSin1 = sin(timeElapsed);
+		fireSin2 = sin(timeElapsed * 1.8f);
+		fireJitter.x += (fireSin1 + fireSin2) * 0.7f * (flickerStrength);
+		fireJitter.y += (fireSin1 + fireSin2) * 0.5f * (flickerStrength);
+		fireJitter.z += (fireSin1 + fireSin2) * 0.9f * (flickerStrength);
 
 		// also draw the lamp object
 		lightCubeShader.use();
@@ -369,6 +379,7 @@ int main() {
 		ImGui::SliderFloat("Diffuse Strength", &diffuseStrength, 0.0f, 1.0f);
 		ImGui::SliderFloat("Specular Strength", &specularStrength, 0.0f, 1.0f);
 		ImGui::SliderInt("S H I N I N E S S", &shininessStrength, 2, 1024);
+		ImGui::SliderFloat("Flicker Strength", &flickerStrength, 0.0f, 1.0f);
 		ImGui::End();
 
 		// Actually render IMGUI elements using OpenGL

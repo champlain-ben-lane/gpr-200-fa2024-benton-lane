@@ -119,6 +119,7 @@ int main() {
 	Shader lightingShader("assets/shaders/basicLighting.vert", "assets/shaders/basicLighting.frag");
 	Shader lightCubeShader("assets/shaders/lightCube.vert", "assets/shaders/lightCube.frag");
 	Shader fireShader("assets/shaders/fireShader.vert", "assets/shaders/fireShader.frag");
+	//Shader treeShader("assets/shaders/treeShader.vert", "assets/shaders/treeShader.frag");
 
 	// set up vertex data (and buffer(s)) and configure vertex attributes
 	// ------------------------------------------------------------------
@@ -214,6 +215,7 @@ int main() {
 	t::Texture normal1("assets/textures/alt_normal.jpg", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT);
 	t::Texture fireNoise("assets/textures/fire_noise.png", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT);
 	t::Texture fireGradient("assets/textures/fire_gradient.png", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT);
+	//t::Texture treeTex("assets/textures/tree.png", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT);
 
 	// Tell OpenGL for each sampler to which texture unit it belongs to (only has to be done once)
 	// -------------------------------------------------------------------------------------------
@@ -263,6 +265,36 @@ int main() {
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 	glBindVertexArray(0);
+
+	// tree stuff - the Lorax
+	// ----------------------
+
+	// tree vertices
+	float treeVertices[] = {
+		// Positions          Texture Coords
+		-1.0f, 0.0f, -10.0f, 0.0f, 0.0f,
+		1.0f, 0.0f, -10.0f, 1.0f, 0.0f,
+		1.0f, 5.0f, -10.0f, 1.0f, 1.0f,
+		-1.0f, 5.0f, -10.0f, 0.0f, 1.0f,
+	};
+
+	//fire VAO and VBO
+	unsigned int treeVAO, treeVBO;
+
+	glGenVertexArrays(1, &treeVAO);
+	glGenBuffers(1, &treeVBO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, treeVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(treeVertices), treeVertices, GL_STATIC_DRAW);
+
+	glBindVertexArray(treeVAO);
+
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+	glBindVertexArray(0);
+
 
 	//Render loop
 	while (!glfwWindowShouldClose(window)) {
@@ -332,7 +364,6 @@ int main() {
 
 		// render the fire quad - Olivia
 		fireShader.use();
-		fireShader.use();
 		fireShader.setMat4("VP", VP);
 		fireShader.setVec3("BillboardPos", firePos);
 		fireShader.setVec2("BillboardSize", glm::vec2(1.0f, 1.0f));
@@ -352,6 +383,19 @@ int main() {
 		fireJitter.x += (fireSin1 + fireSin2) * 0.7f * (flickerStrength);
 		fireJitter.y += (fireSin1 + fireSin2) * 0.5f * (flickerStrength);
 		fireJitter.z += (fireSin1 + fireSin2) * 0.9f * (flickerStrength);
+
+		// render the trees
+		//treeShader.use();
+		//treeShader.setMat4("VP", VP);
+		//treeShader.setVec3("BillboardPos", treePos);
+		//treeShader.setVec2("BillboardSize", glm::vec2(5.0f, 2.0f));
+		//treeShader.setVec3("CameraRight_worldspace", cameraFront);
+		//treeShader.setVec3("CameraUp_worldspace", cameraUp);
+		//treeShader.setFloat("timeElapsed", timeElapsed);
+
+		glBindVertexArray(treeVAO);
+		//treeTex.Bind(GL_TEXTURE4);
+		glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
 		// also draw the lamp object
 		lightCubeShader.use();

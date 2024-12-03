@@ -258,7 +258,6 @@ int main() {
 		model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(1.0f, 0.5f, 2.0f) / scale);
 
-<<<<<<< .mine
 		float rotAngle = static_cast<float>((rand() % 360));
 		model = glm::rotate(model, rotAngle, glm::vec3(0.0f, 0.0f, 1.0f));
 
@@ -301,8 +300,6 @@ int main() {
 	t::Texture fireGradient("assets/textures/fire_gradient.png", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT);
 	//t::Texture treeTex("assets/textures/tree.png", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT);
 
-
-=======
 	// shader configuration
 	skyboxTest.use();
 	skyboxTest.setInt("skybox", 0);
@@ -396,17 +393,6 @@ int main() {
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f); // Background color
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// be sure to activate shader when setting uniforms/drawing objects
-		lightingShader.use();
-		lightingShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
-		lightingShader.setVec3("lightColor", fireColor);
-		lightingShader.setVec3("lightPos", fireJitter);
-		lightingShader.setVec3("viewPos", cameraPos);
-		lightingShader.setFloat("ambientStrength", ambientStrength);
-		lightingShader.setFloat("diffuseStrength", diffuseStrength);
-		lightingShader.setFloat("specularStrength", specularStrength);
-		lightingShader.setInt("shininessStrength", shininessStrength);
-
 		// Passing ze projection matrix to ze shader
 		glm::mat4 projection;
 
@@ -435,14 +421,6 @@ int main() {
 		// view-projection and rotation matrix
 		glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		glm::mat4 VP = projection * view * rotation;
-
-		// render the cube
-		glBindVertexArray(cubeVAO);
-
-		// Bind textures on corresponding texture units
-		texture1.Bind(GL_TEXTURE0);
-		normal1.Bind(GL_TEXTURE1);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		// render the fire quad - Olivia
 		fireShader.use();
@@ -479,11 +457,6 @@ int main() {
 		//treeTex.Bind(GL_TEXTURE4);
 		glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
-		// also draw the lamp object
-		lightCubeShader.use();
-		lightCubeShader.setMat4("projection", projection);
-		lightCubeShader.setMat4("view", view);
-		lightCubeShader.setVec3("lightColor", lightColor);
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
 		model = glm::scale(model, glm::vec3(0.01f, 0.01f, 0.01f));	// it's a bit too big for our scene, so scale it down

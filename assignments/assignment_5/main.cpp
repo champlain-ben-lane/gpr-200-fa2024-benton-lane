@@ -119,8 +119,8 @@ int main() {
 	// -----------------------------
 
 	//Model testModel("assets/models/backpack/backpack.obj");
-	Model testChair("assets/models/chair.fbx");
-	Model testFirepit("assets/models/firepit.fbx");
+	Model testChair("assets/models//chair/chair.fbx");
+	Model testFirepit("assets/models/firepit/firepit.fbx");
 	Model testLogs("assets/models/logs.fbx");
 
 	// set up vertex data (and buffer(s)) and configure vertex attributes
@@ -315,7 +315,7 @@ int main() {
 		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
 		model = glm::scale(model, glm::vec3(0.01f, 0.01f, 0.01f));	// it's a bit too big for our scene, so scale it down
 		testShader.setMat4("model", model);
-		testChair.Draw(testShader);
+		testFirepit.Draw(testShader); // Naming the correct model here loads in the given model
 		// End of test code for model loading
 
 		// Start drawing ImGUI

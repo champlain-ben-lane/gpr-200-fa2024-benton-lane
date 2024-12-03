@@ -54,16 +54,26 @@ float fov = 60.0f;
 // Timing
 float deltaTime = 0.0f;	// Time between current frame and last frame
 float lastFrame = 0.0f;
+float timeElapsed = 0.0f;
 
 // Lighting
 glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
 glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
+
+
+// Fire Variables
+glm::vec3 firePos(0.0f, 0.0f, 0.0f);
+glm::vec3 fireColor(1.0f, 0.7f, 0.3f);
+glm::vec3 fireJitter = firePos;
+float fireSin1;
+float fireSin2;
 
 // IMGui Variables
 float ambientStrength = 0.5;
 float diffuseStrength = 0.5;
 float specularStrength = 0.5;
 int shininessStrength = 250;
+float flickerStrength = 0.5;
 int grassCount = 1000000;
 
 //Leaving this here for the time being for testing purposes: likely want to add to texture.h for clean up purposes
@@ -154,6 +164,8 @@ int main() {
 	Shader testShader("assets/shaders/modelTest.vert", "assets/shaders/modelTest.frag");
 	Shader skyboxTest("assets/shaders/skyboxTest.vert", "assets/shaders/skyboxTest.frag");
 	Shader grassShader("assets/shaders/instancedGrass.vert", "assets/shaders/instancedGrass.frag");
+	Shader fireShader("assets/shaders/fireShader.vert", "assets/shaders/fireShader.frag");
+	//Shader treeShader("assets/shaders/treeShader.vert", "assets/shaders/treeShader.frag");
 
 	float skyboxVertices[] = {
 		// positions          
@@ -285,50 +297,84 @@ int main() {
 
 		glBindVertexArray(0);
 	}
+	t::Texture fireNoise("assets/textures/fire_noise.png", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT);
+	t::Texture fireGradient("assets/textures/fire_gradient.png", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT);
+	//t::Texture treeTex("assets/textures/tree.png", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT);
 
 
 =======
 	// shader configuration
 	skyboxTest.use();
 	skyboxTest.setInt("skybox", 0);
+	fireShader.use();
+	fireShader.setInt("noiseTex", 2);
+	fireShader.setInt("gradientTex", 3);
+
+	// second, configure the light's VAO (VBO stays the same; the vertices are the same for the light object which is also a 3D cube)
+	unsigned int lightCubeVAO;
+	glGenVertexArrays(1, &lightCubeVAO);
+	glBindVertexArray(lightCubeVAO);
 
 
+	// Fiyah stuff - Olivia
+	// --------------------------
+
+	// fire vertices
+	float fireVertices[] = {
+		// Positions          Texture Coords
+		-0.5f, 0.5f, 0.0f, 0.0f, 0.0f,
+		0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
+		0.5f, 1.5f, 0.0f, 1.0f, 1.0f,
+		-0.5f, 1.5f, 0.0f, 0.0f, 1.0f,
+	};
+
+	//fire VAO and VBO
+	unsigned int fireVAO, fireVBO;
+
+	glGenVertexArrays(1, &fireVAO);
+	glGenBuffers(1, &fireVBO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, fireVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(fireVertices), fireVertices, GL_STATIC_DRAW);
+
+	glBindVertexArray(fireVAO);
+
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+	glBindVertexArray(0);
+
+	// tree stuff - the Lorax
+	// ----------------------
+
+	// tree vertices
+	float treeVertices[] = {
+		// Positions          Texture Coords
+		-1.0f, 0.0f, -10.0f, 0.0f, 0.0f,
+		1.0f, 0.0f, -10.0f, 1.0f, 0.0f,
+		1.0f, 5.0f, -10.0f, 1.0f, 1.0f,
+		-1.0f, 5.0f, -10.0f, 0.0f, 1.0f,
+	};
+
+	//fire VAO and VBO
+	unsigned int treeVAO, treeVBO;
+
+	glGenVertexArrays(1, &treeVAO);
+	glGenBuffers(1, &treeVBO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, treeVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(treeVertices), treeVertices, GL_STATIC_DRAW);
+
+	glBindVertexArray(treeVAO);
+
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+	glBindVertexArray(0);
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
->>>>>>> .theirs
 	//Render loop
 	while (!glfwWindowShouldClose(window)) {
 
@@ -337,15 +383,29 @@ int main() {
 		float currentFrame = static_cast<float>(glfwGetTime());
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
+		timeElapsed += deltaTime;
 
 		// Input processing
 		// -----
 		processInput(window);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		// Rendering
 		// ------
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f); // Background color
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		// be sure to activate shader when setting uniforms/drawing objects
+		lightingShader.use();
+		lightingShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
+		lightingShader.setVec3("lightColor", fireColor);
+		lightingShader.setVec3("lightPos", fireJitter);
+		lightingShader.setVec3("viewPos", cameraPos);
+		lightingShader.setFloat("ambientStrength", ambientStrength);
+		lightingShader.setFloat("diffuseStrength", diffuseStrength);
+		lightingShader.setFloat("specularStrength", specularStrength);
+		lightingShader.setInt("shininessStrength", shininessStrength);
 
 		// Passing ze projection matrix to ze shader
 		glm::mat4 projection;
@@ -372,7 +432,58 @@ int main() {
 		testShader.setMat4("view", view);
 		testShader.setVec3("lightColor", lightColor);
 		testShader.setVec3("lightPos", lightPos);
+		// view-projection and rotation matrix
+		glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		glm::mat4 VP = projection * view * rotation;
 
+		// render the cube
+		glBindVertexArray(cubeVAO);
+
+		// Bind textures on corresponding texture units
+		texture1.Bind(GL_TEXTURE0);
+		normal1.Bind(GL_TEXTURE1);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		// render the fire quad - Olivia
+		fireShader.use();
+		fireShader.setMat4("VP", VP);
+		fireShader.setVec3("BillboardPos", firePos);
+		fireShader.setVec2("BillboardSize", glm::vec2(1.0f, 1.0f));
+		fireShader.setVec3("CameraRight_worldspace", cameraFront);
+		fireShader.setVec3("CameraUp_worldspace", cameraUp);
+		fireShader.setFloat("timeElapsed", timeElapsed);
+
+
+		glBindVertexArray(fireVAO);
+		fireNoise.Bind(GL_TEXTURE2);
+		fireGradient.Bind(GL_TEXTURE3);
+		glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+		// add fire jitter (offset to firePos so light flickers)
+		fireSin1 = sin(timeElapsed);
+		fireSin2 = sin(timeElapsed * 1.8f);
+		fireJitter.x += (fireSin1 + fireSin2) * 0.7f * (flickerStrength);
+		fireJitter.y += (fireSin1 + fireSin2) * 0.5f * (flickerStrength);
+		fireJitter.z += (fireSin1 + fireSin2) * 0.9f * (flickerStrength);
+
+		// render the trees
+		//treeShader.use();
+		//treeShader.setMat4("VP", VP);
+		//treeShader.setVec3("BillboardPos", treePos);
+		//treeShader.setVec2("BillboardSize", glm::vec2(5.0f, 2.0f));
+		//treeShader.setVec3("CameraRight_worldspace", cameraFront);
+		//treeShader.setVec3("CameraUp_worldspace", cameraUp);
+		//treeShader.setFloat("timeElapsed", timeElapsed);
+
+		glBindVertexArray(treeVAO);
+		//treeTex.Bind(GL_TEXTURE4);
+		glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+		// also draw the lamp object
+		lightCubeShader.use();
+		lightCubeShader.setMat4("projection", projection);
+		lightCubeShader.setMat4("view", view);
+		lightCubeShader.setVec3("lightColor", lightColor);
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
 		model = glm::scale(model, glm::vec3(0.01f, 0.01f, 0.01f));	// it's a bit too big for our scene, so scale it down
@@ -419,6 +530,7 @@ int main() {
 		ImGui::SliderFloat("Diffuse Strength", &diffuseStrength, 0.0f, 1.0f);
 		ImGui::SliderFloat("Specular Strength", &specularStrength, 0.0f, 1.0f);
 		ImGui::SliderInt("S H I N I N E S S", &shininessStrength, 2, 1024);
+		ImGui::SliderFloat("Flicker Strength", &flickerStrength, 0.0f, 1.0f);
 		ImGui::SliderInt("GRASS", &grassCount, 500000, 20000000);
 		ImGui::End();
 

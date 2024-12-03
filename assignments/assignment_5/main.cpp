@@ -422,27 +422,21 @@ int main() {
 		glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		glm::mat4 VP = projection * view * rotation;
 
-		// render the fire quad - Olivia
-		fireShader.use();
-		fireShader.setMat4("VP", VP);
-		fireShader.setVec3("BillboardPos", firePos);
-		fireShader.setVec2("BillboardSize", glm::vec2(1.0f, 1.0f));
-		fireShader.setVec3("CameraRight_worldspace", cameraFront);
-		fireShader.setVec3("CameraUp_worldspace", cameraUp);
-		fireShader.setFloat("timeElapsed", timeElapsed);
+		// draw skybox as last
+		glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
+		skyboxTest.use();
+		//view = glm::mat4(glm::mat3(camera.GetViewMatrix())); // remove translation from the view matrix
+		skyboxTest.setMat4("view", view);
+		skyboxTest.setMat4("projection", projection);
+		// skybox cube
+		glBindVertexArray(skyboxVAO);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glBindVertexArray(0);
+		glDepthFunc(GL_LESS); // set depth function back to defaultd
 
-
-		glBindVertexArray(fireVAO);
-		fireNoise.Bind(GL_TEXTURE2);
-		fireGradient.Bind(GL_TEXTURE3);
-		glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-
-		// add fire jitter (offset to firePos so light flickers)
-		fireSin1 = sin(timeElapsed);
-		fireSin2 = sin(timeElapsed * 1.8f);
-		fireJitter.x += (fireSin1 + fireSin2) * 0.7f * (flickerStrength);
-		fireJitter.y += (fireSin1 + fireSin2) * 0.5f * (flickerStrength);
-		fireJitter.z += (fireSin1 + fireSin2) * 0.9f * (flickerStrength);
+		
 
 		// render the trees
 		//treeShader.use();
@@ -476,19 +470,27 @@ int main() {
 		}
 		// End of test code for model loading
 
-		// draw skybox as last
-		glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
-		skyboxTest.use();
-		//view = glm::mat4(glm::mat3(camera.GetViewMatrix())); // remove translation from the view matrix
-		skyboxTest.setMat4("view", view);
-		skyboxTest.setMat4("projection", projection);
-		// skybox cube
-		glBindVertexArray(skyboxVAO);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-		glBindVertexArray(0);
-		glDepthFunc(GL_LESS); // set depth function back to default
+		// render the fire quad - Olivia
+		fireShader.use();
+		fireShader.setMat4("VP", VP);
+		fireShader.setVec3("BillboardPos", firePos);
+		fireShader.setVec2("BillboardSize", glm::vec2(1.0f, 1.0f));
+		fireShader.setVec3("CameraRight_worldspace", cameraFront);
+		fireShader.setVec3("CameraUp_worldspace", cameraUp);
+		fireShader.setFloat("timeElapsed", timeElapsed);
+
+
+		glBindVertexArray(fireVAO);
+		fireNoise.Bind(GL_TEXTURE2);
+		fireGradient.Bind(GL_TEXTURE3);
+		glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+		// add fire jitter (offset to firePos so light flickers)
+		fireSin1 = sin(timeElapsed);
+		fireSin2 = sin(timeElapsed * 1.8f);
+		fireJitter.x += (fireSin1 + fireSin2) * 0.7f * (flickerStrength);
+		fireJitter.y += (fireSin1 + fireSin2) * 0.5f * (flickerStrength);
+		fireJitter.z += (fireSin1 + fireSin2) * 0.9f * (flickerStrength);
 
 		// Start drawing ImGUI
 		ImGui_ImplGlfw_NewFrame();

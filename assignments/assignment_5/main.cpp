@@ -239,8 +239,8 @@ int main() {
 	// -----------------------------
 
 	//Model testModel("assets/models/backpack/backpack.obj");
-	Model testChair("assets/models/chair.fbx");
-    Model testFirepit("assets/models/firepit.fbx");
+	Model testChair("assets/models/chair/chair.fbx");
+    Model testFirepit("assets/models/firepit/firepit.fbx");
 	Model testLogs("assets/models/logs.fbx");
 	Model testGrass("assets/models/grass2.fbx");
 
@@ -451,11 +451,17 @@ int main() {
 		//treeTex.Bind(GL_TEXTURE4);
 		glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
+		testShader.use();
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
 		model = glm::scale(model, glm::vec3(0.01f, 0.01f, 0.01f));	// it's a bit too big for our scene, so scale it down
 		testShader.setMat4("model", model);
 		testChair.Draw(testShader);
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
+		model = glm::scale(model, glm::vec3(0.01f, 0.01f, 0.01f));	// it's a bit too big for our scene, so scale it down
+		testShader.setMat4("model", model);
+		testFirepit.Draw(testShader);
 
 		//grass rendering
 		grassShader.use();

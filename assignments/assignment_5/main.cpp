@@ -43,20 +43,6 @@ float lastX = (float)SCREEN_WIDTH / 2.0;
 float lastY = (float)SCREEN_HEIGHT / 2.0;
 bool firstMouse = true;
 
-//glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
-//glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-//glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-//glm::vec3 cameraSide = glm::vec3(1.0f, 0.0f, 0.0f);
-//
-//bool isPerspectiveOn = true;
-//
-//bool firstMouse = true;
-//float yaw = -90.0f;	// Yaw is initialized to -90.0 degrees since a yaw of 0.0 results in a direction vector pointing to the right so we initially rotate a bit to the left.
-//float pitch = 0.0f;
-//float lastX = 800.0f / 2.0;
-//float lastY = 600.0 / 2.0;
-//float fov = 60.0f;
-
 // Timing
 float deltaTime = 0.0f;	// Time between current frame and last frame
 float lastFrame = 0.0f;
@@ -402,14 +388,6 @@ int main() {
 		// Passing ze projection matrix to ze shader
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
 
-		//// Switch between perspectives at the fickle whims of the user
-		//if (isPerspectiveOn) {
-		//	projection = glm::perspective(glm::radians(fov), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 1000.0f);
-		//}
-		//else {
-		//	projection = glm::ortho(-(float)SCREEN_WIDTH / 50, (float)SCREEN_WIDTH / 50, -(float)SCREEN_HEIGHT / 50, (float)SCREEN_HEIGHT / 50, 0.1f, 1000.0f);
-		//}
-
 		// Camera/view transformation
 		glm::mat4 view = camera.GetViewMatrix();
 
@@ -487,10 +465,10 @@ int main() {
 		fireJitter.y += (fireSin1 + fireSin2) * 0.5f * (flickerStrength);
 		fireJitter.z += (fireSin1 + fireSin2) * 0.9f * (flickerStrength);
 
-		// draw skybox as last
-		glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
+		// Draw skybox as last
+		glDepthFunc(GL_LEQUAL);  // Change depth function so depth test passes when values are equal to depth buffer's content. Otherwise C U B E bug
 		skyboxTest.use();
-		view = glm::mat4(glm::mat3(camera.GetViewMatrix())); // remove translation from the view matrix
+		view = glm::mat4(glm::mat3(camera.GetViewMatrix())); // Remove translation from the view matrix - it's the sky dummy, it doesn't move when you move
 		skyboxTest.setMat4("view", view);
 		skyboxTest.setMat4("projection", projection);
 		// skybox cube
@@ -499,7 +477,7 @@ int main() {
 		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 		glBindVertexArray(0);
-		glDepthFunc(GL_LESS); // set depth function back to defaultd
+		glDepthFunc(GL_LESS); // Set depth function back to default just in case you need again for later
 
 		// Start drawing ImGUI
 		ImGui_ImplGlfw_NewFrame();
@@ -544,8 +522,6 @@ void processInput(GLFWwindow* window)
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) // Close the program
 		glfwSetWindowShouldClose(window, true);
 
-
-
 	float cameraSpeed = static_cast<float>(2.5 * deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) // Moar s p e e d
 		cameraSpeed = cameraSpeed * 2;
@@ -561,8 +537,6 @@ void processInput(GLFWwindow* window)
 		camera.Position -= glm::normalize(glm::cross(camera.Front, camera.Right)) * cameraSpeed;
 	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) // Move down
 		camera.Position += glm::normalize(glm::cross(camera.Front, camera.Right)) * cameraSpeed;
-	//if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) // Flip projection mode
-	//	isPerspectiveOn = !isPerspectiveOn;
 }
 
 // GLFW: Whenever the window size changed (by OS or user resize) this callback function executes
@@ -588,7 +562,7 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 	}
 
 	float xoffset = xpos - lastX;
-	float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+	float yoffset = lastY - ypos; // Reversed since y-coordinates go from bottom to top
 
 	lastX = xpos;
 	lastY = ypos;

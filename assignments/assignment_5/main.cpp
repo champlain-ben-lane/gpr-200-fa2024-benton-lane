@@ -16,6 +16,7 @@
 #include "../core/bl_library/texture.h"
 #include "../core/bl_library/mesh.h"
 #include "../core/bl_library/model.h"
+#include "../core/bl_library/camera.h"
 // IMGUI stuff
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
@@ -37,19 +38,10 @@ const int SCREEN_WIDTH = 1080;
 const int SCREEN_HEIGHT = 720;
 
 // Camera settings
-glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
-glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-glm::vec3 cameraSide = glm::vec3(1.0f, 0.0f, 0.0f);
-
-bool isPerspectiveOn = true;
-
+Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+float lastX = (float)SCREEN_WIDTH / 2.0;
+float lastY = (float)SCREEN_HEIGHT / 2.0;
 bool firstMouse = true;
-float yaw = -90.0f;	// Yaw is initialized to -90.0 degrees since a yaw of 0.0 results in a direction vector pointing to the right so we initially rotate a bit to the left.
-float pitch = 0.0f;
-float lastX = 800.0f / 2.0;
-float lastY = 600.0 / 2.0;
-float fov = 60.0f;
 
 // Timing
 float deltaTime = 0.0f;	// Time between current frame and last frame
@@ -74,7 +66,7 @@ float diffuseStrength = 0.5;
 float specularStrength = 0.5;
 int shininessStrength = 250;
 float flickerStrength = 0.5;
-int grassCount = 1000000;
+int grassCount = 10000;
 
 //Leaving this here for the time being for testing purposes: likely want to add to texture.h for clean up purposes
 // loads a cubemap texture from 6 individual texture faces
@@ -240,7 +232,7 @@ int main() {
 
 	//Model testModel("assets/models/backpack/backpack.obj");
 	Model testChair("assets/models/chair/chair.fbx");
-    Model testFirepit("assets/models/firepit/firepit.fbx");
+	Model testFirepit("assets/models/firepit/firepit.fbx");
 	Model testLogs("assets/models/logs.fbx");
 	Model testGrass("assets/models/grass2.fbx");
 
@@ -394,26 +386,17 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Passing ze projection matrix to ze shader
-		glm::mat4 projection;
-
-		// Switch between perspectives at the fickle whims of the user
-		if (isPerspectiveOn) {
-			projection = glm::perspective(glm::radians(fov), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 1000.0f);
-		}
-		else {
-			projection = glm::ortho(-(float)SCREEN_WIDTH / 50, (float)SCREEN_WIDTH / 50, -(float)SCREEN_HEIGHT / 50, (float)SCREEN_HEIGHT / 50, 0.1f, 1000.0f);
-		}
+		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
 
 		// Camera/view transformation
-		glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+		glm::mat4 view = camera.GetViewMatrix();
 
 		// world transformation
 		glm::mat4 model = glm::mat4(1.0f);
 
 		// Start of test code for model loading
 		testShader.use();
-		testShader.setVec3("viewPos", cameraPos);
-		
+		testShader.setVec3("viewPos", camera.Position);
 		testShader.setMat4("projection", projection);
 		testShader.setMat4("view", view);
 		testShader.setVec3("lightColor", lightColor);
@@ -421,22 +404,6 @@ int main() {
 		// view-projection and rotation matrix
 		glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		glm::mat4 VP = projection * view * rotation;
-
-		// draw skybox as last
-		glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
-		skyboxTest.use();
-		//view = glm::mat4(glm::mat3(camera.GetViewMatrix())); // remove translation from the view matrix
-		skyboxTest.setMat4("view", view);
-		skyboxTest.setMat4("projection", projection);
-		// skybox cube
-		glBindVertexArray(skyboxVAO);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-		glBindVertexArray(0);
-		glDepthFunc(GL_LESS); // set depth function back to defaultd
-
-		
 
 		// render the trees
 		//treeShader.use();
@@ -481,8 +448,8 @@ int main() {
 		fireShader.setMat4("VP", VP);
 		fireShader.setVec3("BillboardPos", firePos);
 		fireShader.setVec2("BillboardSize", glm::vec2(1.0f, 1.0f));
-		fireShader.setVec3("CameraRight_worldspace", cameraFront);
-		fireShader.setVec3("CameraUp_worldspace", cameraUp);
+		fireShader.setVec3("CameraRight_worldspace", camera.Front);
+		fireShader.setVec3("CameraUp_worldspace", camera.Up);
 		fireShader.setFloat("timeElapsed", timeElapsed);
 
 
@@ -497,6 +464,20 @@ int main() {
 		fireJitter.x += (fireSin1 + fireSin2) * 0.7f * (flickerStrength);
 		fireJitter.y += (fireSin1 + fireSin2) * 0.5f * (flickerStrength);
 		fireJitter.z += (fireSin1 + fireSin2) * 0.9f * (flickerStrength);
+
+		// Draw skybox as last
+		glDepthFunc(GL_LEQUAL);  // Change depth function so depth test passes when values are equal to depth buffer's content. Otherwise C U B E bug
+		skyboxTest.use();
+		view = glm::mat4(glm::mat3(camera.GetViewMatrix())); // Remove translation from the view matrix - it's the sky dummy, it doesn't move when you move
+		skyboxTest.setMat4("view", view);
+		skyboxTest.setMat4("projection", projection);
+		// skybox cube
+		glBindVertexArray(skyboxVAO);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glBindVertexArray(0);
+		glDepthFunc(GL_LESS); // Set depth function back to default just in case you need again for later
 
 		// Start drawing ImGUI
 		ImGui_ImplGlfw_NewFrame();
@@ -541,25 +522,21 @@ void processInput(GLFWwindow* window)
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) // Close the program
 		glfwSetWindowShouldClose(window, true);
 
-
-
 	float cameraSpeed = static_cast<float>(2.5 * deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) // Moar s p e e d
 		cameraSpeed = cameraSpeed * 2;
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) // Move forward
-		cameraPos += cameraSpeed * cameraFront;
+		camera.Position += cameraSpeed * camera.Front;
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) // Move backward
-		cameraPos -= cameraSpeed * cameraFront;
+		camera.Position -= cameraSpeed * camera.Front;
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) // Move left
-		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+		camera.Position -= glm::normalize(glm::cross(camera.Front, camera.Up)) * cameraSpeed;
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) // Move right
-		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+		camera.Position += glm::normalize(glm::cross(camera.Front, camera.Up)) * cameraSpeed;
 	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) // Move up
-		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraSide)) * cameraSpeed;
+		camera.Position -= glm::normalize(glm::cross(camera.Front, camera.Right)) * cameraSpeed;
 	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) // Move down
-		cameraPos += glm::normalize(glm::cross(cameraFront, cameraSide)) * cameraSpeed;
-	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) // Flip projection mode
-		isPerspectiveOn = !isPerspectiveOn;
+		camera.Position += glm::normalize(glm::cross(camera.Front, camera.Right)) * cameraSpeed;
 }
 
 // GLFW: Whenever the window size changed (by OS or user resize) this callback function executes
@@ -575,12 +552,8 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 // -------------------------------------------------------
 void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 {
-	//if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_2) != GLFW_PRESS) // If the mouse isn't being pressed, don't do anything
-	//	return;
-
 	float xpos = static_cast<float>(xposIn);
 	float ypos = static_cast<float>(yposIn);
-
 	if (firstMouse)
 	{
 		lastX = xpos;
@@ -588,51 +561,19 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 		firstMouse = false;
 	}
 
-	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_2) == GLFW_RELEASE)
-	{
-		firstMouse = true;
-		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-		return;
-	}
-	else
-	{
-		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	}
-
 	float xoffset = xpos - lastX;
 	float yoffset = lastY - ypos; // Reversed since y-coordinates go from bottom to top
+
 	lastX = xpos;
 	lastY = ypos;
 
-	float sensitivity = 0.1f; // Change this value to your liking
-	xoffset *= sensitivity;
-	yoffset *= sensitivity;
-
-	yaw += xoffset;
-	pitch += yoffset;
-
-	// Make sure that when pitch is out of bounds, screen doesn't get flipped
-	if (pitch > 89.0f)
-		pitch = 89.0f;
-	if (pitch < -89.0f)
-		pitch = -89.0f;
-
-	glm::vec3 front;
-	front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-	front.y = sin(glm::radians(pitch));
-	front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-	cameraFront = glm::normalize(front);
-	cameraSide = glm::normalize(glm::cross(cameraFront, cameraUp));
+	camera.ProcessMouseMovement(xoffset, yoffset);
 }
 
 // GLFW: Whenever the mouse scroll wheel scrolls, this callback is called
 // ----------------------------------------------------------------------
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-	fov -= (float)yoffset;
-	if (fov < 1.0f)
-		fov = 1.0f;
-	if (fov > 120.0f)
-		fov = 120.0f;
+	camera.ProcessMouseScroll(static_cast<float>(yoffset));
 }
 

@@ -427,20 +427,6 @@ int main() {
 		glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		glm::mat4 VP = projection * view * rotation;
 
-		// draw skybox as last
-		glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
-		skyboxTest.use();
-		view = glm::mat4(glm::mat3(camera.GetViewMatrix())); // remove translation from the view matrix
-		skyboxTest.setMat4("view", view);
-		skyboxTest.setMat4("projection", projection);
-		// skybox cube
-		glBindVertexArray(skyboxVAO);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-		glBindVertexArray(0);
-		glDepthFunc(GL_LESS); // set depth function back to defaultd
-
 		// render the trees
 		//treeShader.use();
 		//treeShader.setMat4("VP", VP);
@@ -500,6 +486,20 @@ int main() {
 		fireJitter.x += (fireSin1 + fireSin2) * 0.7f * (flickerStrength);
 		fireJitter.y += (fireSin1 + fireSin2) * 0.5f * (flickerStrength);
 		fireJitter.z += (fireSin1 + fireSin2) * 0.9f * (flickerStrength);
+
+		// draw skybox as last
+		glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
+		skyboxTest.use();
+		view = glm::mat4(glm::mat3(camera.GetViewMatrix())); // remove translation from the view matrix
+		skyboxTest.setMat4("view", view);
+		skyboxTest.setMat4("projection", projection);
+		// skybox cube
+		glBindVertexArray(skyboxVAO);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glBindVertexArray(0);
+		glDepthFunc(GL_LESS); // set depth function back to defaultd
 
 		// Start drawing ImGUI
 		ImGui_ImplGlfw_NewFrame();

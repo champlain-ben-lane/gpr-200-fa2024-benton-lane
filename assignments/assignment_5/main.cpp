@@ -57,6 +57,8 @@ glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
 glm::vec3 firePos(0.0f, 0.0f, 0.0f);
 glm::vec3 fireColor(1.0f, 0.7f, 0.3f);
 
+glm::vec3 treePos(0.0f, 0.0f, -10.0f);
+
 // IMGui Variables
 float ambientStrength = 0.5;
 float diffuseStrength = 0.5;
@@ -64,7 +66,7 @@ float specularStrength = 0.5;
 int shininessStrength = 250;
 float flickerStrength = 0.5;
 float windSpeed = 1.0;
-int grassCount = 1000000;
+int grassCount = 100000;
 
 //Leaving this here for the time being for testing purposes: likely want to add to texture.h for clean up purposes
 // loads a cubemap texture from 6 individual texture faces
@@ -155,7 +157,7 @@ int main() {
 	Shader skyboxTest("assets/shaders/skyboxTest.vert", "assets/shaders/skyboxTest.frag");
 	Shader grassShader("assets/shaders/instancedGrass.vert", "assets/shaders/instancedGrass.frag");
 	Shader fireShader("assets/shaders/fireShader.vert", "assets/shaders/fireShader.frag");
-	//Shader treeShader("assets/shaders/treeShader.vert", "assets/shaders/treeShader.frag");
+	Shader treeShader("assets/shaders/treeShader.vert", "assets/shaders/treeShader.frag");
 	Shader groundShader("assets/shaders/groundPlane.vert", "assets/shaders/groundPlane.frag");
 
 	float skyboxVertices[] = {
@@ -290,7 +292,7 @@ int main() {
 	}
 	t::Texture fireNoise("assets/textures/fire_noise.png", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT);
 	t::Texture fireGradient("assets/textures/fire_gradient.png", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT);
-	//t::Texture treeTex("assets/textures/tree.png", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT);
+	t::Texture treeTex("assets/textures/tree.png", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT);
 
 	// shader configuration
 	skyboxTest.use();
@@ -374,10 +376,10 @@ int main() {
 	// tree vertices
 	float treeVertices[] = {
 		// Positions          Texture Coords
-		-1.0f, 0.0f, -10.0f, 0.0f, 0.0f,
-		1.0f, 0.0f, -10.0f, 1.0f, 0.0f,
-		1.0f, 5.0f, -10.0f, 1.0f, 1.0f,
-		-1.0f, 5.0f, -10.0f, 0.0f, 1.0f,
+		-1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+		 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+		 1.0f, 5.0f, 0.0f, 1.0f, 1.0f,
+		-1.0f, 5.0f, 0.0f, 0.0f, 1.0f,
 	};
 
 	//Tree VAO and VBO
@@ -435,23 +437,6 @@ int main() {
 		testShader.setMat4("view", view);
 		testShader.setVec3("lightColor", lightColor);
 		testShader.setVec3("lightPos", lightPos);
-		// view-projection and rotation matrix
-		glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		glm::mat4 fireModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.5f, 0.0f));
-		glm::mat4 VP = projection * view * fireModel;
-
-		// render the trees
-		//treeShader.use();
-		//treeShader.setMat4("VP", VP);
-		//treeShader.setVec3("BillboardPos", treePos);
-		//treeShader.setVec2("BillboardSize", glm::vec2(5.0f, 2.0f));
-		//treeShader.setVec3("CameraRight_worldspace", cameraFront);
-		//treeShader.setVec3("CameraUp_worldspace", cameraUp);
-		//treeShader.setFloat("timeElapsed", timeElapsed);
-
-		glBindVertexArray(treeVAO);
-		//treeTex.Bind(GL_TEXTURE4);
-		//glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
 		testShader.use();
 		model = glm::mat4(1.0f);
@@ -504,9 +489,33 @@ int main() {
 		glBindVertexArray(0);
 		glDepthFunc(GL_LESS); // Set depth function back to default just in case you need again for laterd
 
+		// render the trees
+
+		// view-projection matrix
+		//add instancing here
+		glm::mat4 treeModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -10.0f));
+		glm::mat4 treeVP = projection * view * treeModel;
+
+		treeShader.use();
+		treeShader.setMat4("VP", treeVP);
+		treeShader.setVec3("BillboardPos", treePos);
+		treeShader.setVec2("BillboardSize", glm::vec2(5.0f, 2.0f));
+		treeShader.setVec3("CameraRight_worldspace", camera.Right);
+		treeShader.setVec3("CameraUp_worldspace", camera.Up);
+		treeShader.setFloat("timeElapsed", timeElapsed);
+
+		glBindVertexArray(treeVAO);
+		treeTex.Bind(GL_TEXTURE4);
+		glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
 		// render the fire quad - Olivia
+		// 
+		// view-projection matrix
+		glm::mat4 fireModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.5f, 0.0f));
+		glm::mat4 fireVP = projection * view * fireModel;
+
 		fireShader.use();
-		fireShader.setMat4("VP", VP);
+		fireShader.setMat4("VP", fireVP);
 		fireShader.setMat4("projection", projection);
 		fireShader.setVec3("BillboardPos", firePos);
 		fireShader.setVec2("BillboardSize", glm::vec2(0.85f, 0.85f));

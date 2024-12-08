@@ -37,6 +37,11 @@ void main()
     // make transparent
     if (col.r > 0.4 && col.r < 0.6 && col.g < 0.1 && col.b > 0.4 && col.b < 0.6)
         col.a = 0.0;
+
+    // Feather edges
+    float edgeDistance = length(FragPos - vec2(0.5, 0.5));
+    //exp changes transparency contrast, pow changes graduation of feathering, smoothstep changes curve of bottom edge
+    col.a *= exp(-edgeDistance * 2.0) * pow(smoothstep(0.55, 1.0, 1.0 - edgeDistance), 0.6);
     
     FragColor = col;
 }

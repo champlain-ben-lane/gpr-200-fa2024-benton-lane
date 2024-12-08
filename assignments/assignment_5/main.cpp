@@ -56,9 +56,6 @@ glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
 // Fire Variables
 glm::vec3 firePos(0.0f, 0.0f, 0.0f);
 glm::vec3 fireColor(1.0f, 0.7f, 0.3f);
-glm::vec3 fireJitter = firePos;
-float fireSin1;
-float fireSin2;
 
 // IMGui Variables
 float ambientStrength = 0.5;
@@ -66,6 +63,7 @@ float diffuseStrength = 0.5;
 float specularStrength = 0.5;
 int shininessStrength = 250;
 float flickerStrength = 0.5;
+float windSpeed = 1.0;
 int grassCount = 10000;
 
 //Leaving this here for the time being for testing purposes: likely want to add to texture.h for clean up purposes
@@ -311,10 +309,10 @@ int main() {
 	// fire vertices
 	float fireVertices[] = {
 		// Positions          Texture Coords
-		-0.5f, 0.5f, 0.0f, 0.0f, 0.0f,
-		0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
-		0.5f, 1.5f, 0.0f, 1.0f, 1.0f,
-		-0.5f, 1.5f, 0.0f, 0.0f, 1.0f,
+		-0.425f,  0.425f, 0.0f, 0.0f, 0.0f,
+		 0.425f,  0.425f, 0.0f, 1.0f, 0.0f,
+		 0.425f, -0.425f, 0.0f, 1.0f, 1.0f,
+		-0.425f, -0.425f, 0.0f, 0.0f, 1.0f,
 	};
 
 	//fire VAO and VBO
@@ -403,7 +401,8 @@ int main() {
 		testShader.setVec3("lightPos", lightPos);
 		// view-projection and rotation matrix
 		glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		glm::mat4 VP = projection * view * rotation;
+		glm::mat4 fireModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.5f, 0.0f));
+		glm::mat4 VP = projection * view * fireModel;
 
 		// render the trees
 		//treeShader.use();
@@ -447,23 +446,19 @@ int main() {
 		fireShader.use();
 		fireShader.setMat4("VP", VP);
 		fireShader.setVec3("BillboardPos", firePos);
-		fireShader.setVec2("BillboardSize", glm::vec2(1.0f, 1.0f));
-		fireShader.setVec3("CameraRight_worldspace", camera.Front);
+		fireShader.setVec2("BillboardSize", glm::vec2(0.85f, 0.85f));
+		fireShader.setVec3("CameraRight_worldspace", camera.Right);
 		fireShader.setVec3("CameraUp_worldspace", camera.Up);
+		fireShader.setVec3("CameraFront_worldspace", camera.Front);
 		fireShader.setFloat("timeElapsed", timeElapsed);
+		fireShader.setFloat("flickerStrength", flickerStrength);
+		fireShader.setFloat("windSpeed", windSpeed);
 
 
 		glBindVertexArray(fireVAO);
 		fireNoise.Bind(GL_TEXTURE2);
 		fireGradient.Bind(GL_TEXTURE3);
 		glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-
-		// add fire jitter (offset to firePos so light flickers)
-		fireSin1 = sin(timeElapsed);
-		fireSin2 = sin(timeElapsed * 1.8f);
-		fireJitter.x += (fireSin1 + fireSin2) * 0.7f * (flickerStrength);
-		fireJitter.y += (fireSin1 + fireSin2) * 0.5f * (flickerStrength);
-		fireJitter.z += (fireSin1 + fireSin2) * 0.9f * (flickerStrength);
 
 		// Draw skybox as last
 		glDepthFunc(GL_LEQUAL);  // Change depth function so depth test passes when values are equal to depth buffer's content. Otherwise C U B E bug
@@ -493,6 +488,7 @@ int main() {
 		ImGui::SliderFloat("Specular Strength", &specularStrength, 0.0f, 1.0f);
 		ImGui::SliderInt("S H I N I N E S S", &shininessStrength, 2, 1024);
 		ImGui::SliderFloat("Flicker Strength", &flickerStrength, 0.0f, 1.0f);
+		ImGui::SliderFloat("Wind Speed", &windSpeed, 0.0f, 10.0f);
 		ImGui::SliderInt("GRASS", &grassCount, 500000, 20000000);
 		ImGui::End();
 

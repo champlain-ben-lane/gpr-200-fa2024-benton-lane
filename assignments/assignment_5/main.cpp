@@ -557,6 +557,17 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 		firstMouse = false;
 	}
 
+	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_2) == GLFW_RELEASE)
+	{
+		firstMouse = true;
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		return;
+	}
+	else
+	{
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	}
+
 	float xoffset = xpos - lastX;
 	float yoffset = lastY - ypos; // Reversed since y-coordinates go from bottom to top
 

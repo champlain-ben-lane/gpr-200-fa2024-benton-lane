@@ -38,7 +38,7 @@ const int SCREEN_WIDTH = 1080;
 const int SCREEN_HEIGHT = 720;
 
 // Camera settings
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+Camera camera(glm::vec3(0.0f, 1.2f, 3.0f));
 float lastX = (float)SCREEN_WIDTH / 2.0;
 float lastY = (float)SCREEN_HEIGHT / 2.0;
 bool firstMouse = true;
@@ -49,9 +49,8 @@ float lastFrame = 0.0f;
 float timeElapsed = 0.0f;
 
 // Lighting
-glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
-glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
-
+glm::vec3 lightPos(0.0f, 0.0f, 0.5f);
+glm::vec3 lightColor(1.0f, 0.7f, 0.3f);
 
 // Fire Variables
 glm::vec3 firePos(0.0f, 0.0f, 0.0f);
@@ -64,7 +63,7 @@ float specularStrength = 0.5;
 int shininessStrength = 250;
 float flickerStrength = 0.5;
 float windSpeed = 1.0;
-int grassCount = 1000000;
+int grassCount = 500000;
 
 //Leaving this here for the time being for testing purposes: likely want to add to texture.h for clean up purposes
 // loads a cubemap texture from 6 individual texture faces
@@ -521,7 +520,7 @@ int main() {
 		fireNoise.Bind(GL_TEXTURE2);
 		fireGradient.Bind(GL_TEXTURE3);
 		glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-		
+
 		// Start drawing ImGUI
 		ImGui_ImplGlfw_NewFrame();
 		ImGui_ImplOpenGL3_NewFrame();
@@ -531,13 +530,9 @@ int main() {
 		ImGui::Begin("Settings");
 		ImGui::DragFloat3("Light Position", &lightPos.x, 0.1f);
 		ImGui::ColorEdit3("Light Color", &lightColor.r);
-		ImGui::SliderFloat("Ambient Strength", &ambientStrength, 0.0f, 1.0f);
-		ImGui::SliderFloat("Diffuse Strength", &diffuseStrength, 0.0f, 1.0f);
-		ImGui::SliderFloat("Specular Strength", &specularStrength, 0.0f, 1.0f);
-		ImGui::SliderInt("S H I N I N E S S", &shininessStrength, 2, 1024);
 		ImGui::SliderFloat("Flicker Strength", &flickerStrength, 0.0f, 1.0f);
 		ImGui::SliderFloat("Wind Speed", &windSpeed, 0.0f, 10.0f);
-		ImGui::SliderInt("GRASS", &grassCount, 100000, 1000000);
+		ImGui::SliderInt("GRASS", &grassCount, 10000, 500000);
 		ImGui::End();
 
 		// Actually render IMGUI elements using OpenGL

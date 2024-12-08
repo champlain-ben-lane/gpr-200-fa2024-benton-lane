@@ -311,10 +311,10 @@ int main() {
 	// fire vertices
 	float fireVertices[] = {
 		// Positions          Texture Coords
-		-0.35f, 0.25f, 0.0f, 0.0f, 0.0f,
-		 0.35f, 0.25f, 0.0f, 1.0f, 0.0f,
-		 0.35f, 1.0f, 0.0f, 1.0f, 1.0f,
-		-0.35f, 1.0f, 0.0f, 0.0f, 1.0f,
+		-0.425f,  0.425f, 0.0f, 0.0f, 0.0f,
+		 0.425f,  0.425f, 0.0f, 1.0f, 0.0f,
+		 0.425f, -0.425f, 0.0f, 1.0f, 1.0f,
+		-0.425f, -0.425f, 0.0f, 0.0f, 1.0f,
 	};
 
 	//fire VAO and VBO
@@ -403,7 +403,8 @@ int main() {
 		testShader.setVec3("lightPos", lightPos);
 		// view-projection and rotation matrix
 		glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		glm::mat4 VP = projection * view;
+		glm::mat4 fireModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.5f, 0.0f));
+		glm::mat4 VP = projection * view * fireModel;
 
 		// render the trees
 		//treeShader.use();
@@ -447,7 +448,7 @@ int main() {
 		fireShader.use();
 		fireShader.setMat4("VP", VP);
 		fireShader.setVec3("BillboardPos", firePos);
-		fireShader.setVec2("BillboardSize", glm::vec2(1.0f, 1.0f));
+		fireShader.setVec2("BillboardSize", glm::vec2(0.85f, 0.85f));
 		fireShader.setVec3("CameraRight_worldspace", camera.Right);
 		fireShader.setVec3("CameraUp_worldspace", camera.Up);
 		fireShader.setVec3("CameraFront_worldspace", camera.Front);

@@ -56,9 +56,6 @@ glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
 // Fire Variables
 glm::vec3 firePos(0.0f, 0.0f, 0.0f);
 glm::vec3 fireColor(1.0f, 0.7f, 0.3f);
-glm::vec3 fireJitter = firePos;
-float fireSin1;
-float fireSin2;
 
 // IMGui Variables
 float ambientStrength = 0.5;
@@ -66,6 +63,7 @@ float diffuseStrength = 0.5;
 float specularStrength = 0.5;
 int shininessStrength = 250;
 float flickerStrength = 0.5;
+float windSpeed = 1.0;
 int grassCount = 10000;
 
 //Leaving this here for the time being for testing purposes: likely want to add to texture.h for clean up purposes
@@ -453,19 +451,14 @@ int main() {
 		fireShader.setVec3("CameraUp_worldspace", camera.Up);
 		fireShader.setVec3("CameraFront_worldspace", camera.Front);
 		fireShader.setFloat("timeElapsed", timeElapsed);
+		fireShader.setFloat("flickerStrength", flickerStrength);
+		fireShader.setFloat("windSpeed", windSpeed);
 
 
 		glBindVertexArray(fireVAO);
 		fireNoise.Bind(GL_TEXTURE2);
 		fireGradient.Bind(GL_TEXTURE3);
 		glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-
-		// add fire jitter (offset to firePos so light flickers)
-		fireSin1 = sin(timeElapsed);
-		fireSin2 = sin(timeElapsed * 1.8f);
-		fireJitter.x += (fireSin1 + fireSin2) * 0.7f * (flickerStrength);
-		fireJitter.y += (fireSin1 + fireSin2) * 0.5f * (flickerStrength);
-		fireJitter.z += (fireSin1 + fireSin2) * 0.9f * (flickerStrength);
 
 		// Draw skybox as last
 		glDepthFunc(GL_LEQUAL);  // Change depth function so depth test passes when values are equal to depth buffer's content. Otherwise C U B E bug
@@ -495,6 +488,7 @@ int main() {
 		ImGui::SliderFloat("Specular Strength", &specularStrength, 0.0f, 1.0f);
 		ImGui::SliderInt("S H I N I N E S S", &shininessStrength, 2, 1024);
 		ImGui::SliderFloat("Flicker Strength", &flickerStrength, 0.0f, 1.0f);
+		ImGui::SliderFloat("Wind Speed", &windSpeed, 0.0f, 10.0f);
 		ImGui::SliderInt("GRASS", &grassCount, 500000, 20000000);
 		ImGui::End();
 

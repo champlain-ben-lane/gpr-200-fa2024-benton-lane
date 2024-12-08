@@ -292,7 +292,7 @@ int main() {
 	}
 	t::Texture fireNoise("assets/textures/fire_noise.png", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT);
 	t::Texture fireGradient("assets/textures/fire_gradient.png", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT);
-	t::Texture treeTex("assets/textures/tree.png", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT);
+	t::Texture treeTex("assets/textures/tree.png", GL_LINEAR_MIPMAP_LINEAR, GL_CLAMP_TO_EDGE);
 
 	// shader configuration
 	skyboxTest.use();
@@ -300,6 +300,8 @@ int main() {
 	fireShader.use();
 	fireShader.setInt("noiseTex", 2);
 	fireShader.setInt("gradientTex", 3);
+	treeShader.use();
+	treeShader.setInt("treeTex", 4);
 
 	// second, configure the light's VAO (VBO stays the same; the vertices are the same for the light object which is also a 3D cube)
 	unsigned int lightCubeVAO;
@@ -376,10 +378,10 @@ int main() {
 	// tree vertices
 	float treeVertices[] = {
 		// Positions          Texture Coords
-		-1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-		 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-		 1.0f, 5.0f, 0.0f, 1.0f, 1.0f,
-		-1.0f, 5.0f, 0.0f, 0.0f, 1.0f,
+		-0.5f, 0.0f, 0.0f, 0.0f, 0.0f,
+		 0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
+		 0.5f, 1.0f, 0.0f, 1.0f, 1.0f,
+		-0.5f, 1.0f, 0.0f, 0.0f, 1.0f,
 	};
 
 	//Tree VAO and VBO
@@ -478,8 +480,8 @@ int main() {
 		// Draw skybox as last
 		glDepthFunc(GL_LEQUAL);  // Change depth function so depth test passes when values are equal to depth buffer's content. Otherwise C U B E bug
 		skyboxTest.use();
-		view = glm::mat4(glm::mat3(camera.GetViewMatrix())); // Remove translation from the view matrix - it's the sky dummy, it doesn't move when you move
-		skyboxTest.setMat4("view", view);
+		glm::mat4 camView = glm::mat4(glm::mat3(camera.GetViewMatrix())); // Remove translation from the view matrix - it's the sky dummy, it doesn't move when you move
+		skyboxTest.setMat4("view", camView);
 		skyboxTest.setMat4("projection", projection);
 		// skybox cube
 		glBindVertexArray(skyboxVAO);
@@ -493,13 +495,13 @@ int main() {
 
 		// view-projection matrix
 		//add instancing here
-		glm::mat4 treeModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -10.0f));
+		glm::mat4 treeModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -1.5f));
 		glm::mat4 treeVP = projection * view * treeModel;
 
 		treeShader.use();
 		treeShader.setMat4("VP", treeVP);
 		treeShader.setVec3("BillboardPos", treePos);
-		treeShader.setVec2("BillboardSize", glm::vec2(5.0f, 2.0f));
+		treeShader.setVec2("BillboardSize", glm::vec2(7.5f, 7.5f));
 		treeShader.setVec3("CameraRight_worldspace", camera.Right);
 		treeShader.setVec3("CameraUp_worldspace", camera.Up);
 		treeShader.setFloat("timeElapsed", timeElapsed);

@@ -64,7 +64,7 @@ float specularStrength = 0.5;
 int shininessStrength = 250;
 float flickerStrength = 0.5;
 float windSpeed = 1.0;
-int grassCount = 10000;
+int grassCount = 1000000;
 
 //Leaving this here for the time being for testing purposes: likely want to add to texture.h for clean up purposes
 // loads a cubemap texture from 6 individual texture faces
@@ -310,13 +310,13 @@ int main() {
 	// ------------------------------------------------------------------
 	float planeVertices[] = {
 		// positions            // normals         // texcoords
-		 10.0f, -0.5f,  10.0f,  0.0f, 1.0f, 0.0f,  10.0f,  0.0f,
-		-10.0f, -0.5f,  10.0f,  0.0f, 1.0f, 0.0f,   0.0f,  0.0f,
-		-10.0f, -0.5f, -10.0f,  0.0f, 1.0f, 0.0f,   0.0f, 10.0f,
+		 25.0f, 0.0f,  25.0f,  0.0f, 1.0f, 0.0f,  10.0f,  0.0f,
+		-25.0f, 0.0f,  25.0f,  0.0f, 1.0f, 0.0f,   0.0f,  0.0f,
+		-25.0f, 0.0f, -25.0f,  0.0f, 1.0f, 0.0f,   0.0f, 10.0f,
 
-		 10.0f, -0.5f,  10.0f,  0.0f, 1.0f, 0.0f,  10.0f,  0.0f,
-		-10.0f, -0.5f, -10.0f,  0.0f, 1.0f, 0.0f,   0.0f, 10.0f,
-		 10.0f, -0.5f, -10.0f,  0.0f, 1.0f, 0.0f,  10.0f, 10.0f
+		 25.0f, 0.0f,  25.0f,  0.0f, 1.0f, 0.0f,  10.0f,  0.0f,
+		-25.0f, 0.0f, -25.0f,  0.0f, 1.0f, 0.0f,   0.0f, 10.0f,
+		 25.0f, 0.0f, -25.0f,  0.0f, 1.0f, 0.0f,  10.0f, 10.0f
 	};
 	// plane VAO
 	unsigned int planeVAO, planeVBO;
@@ -491,6 +491,7 @@ int main() {
 		// render the fire quad - Olivia
 		fireShader.use();
 		fireShader.setMat4("VP", VP);
+		fireShader.setMat4("projection", projection);
 		fireShader.setVec3("BillboardPos", firePos);
 		fireShader.setVec2("BillboardSize", glm::vec2(0.85f, 0.85f));
 		fireShader.setVec3("CameraRight_worldspace", camera.Right);
@@ -499,7 +500,6 @@ int main() {
 		fireShader.setFloat("timeElapsed", timeElapsed);
 		fireShader.setFloat("flickerStrength", flickerStrength);
 		fireShader.setFloat("windSpeed", windSpeed);
-
 
 		glBindVertexArray(fireVAO);
 		fireNoise.Bind(GL_TEXTURE2);
@@ -535,7 +535,7 @@ int main() {
 		ImGui::SliderInt("S H I N I N E S S", &shininessStrength, 2, 1024);
 		ImGui::SliderFloat("Flicker Strength", &flickerStrength, 0.0f, 1.0f);
 		ImGui::SliderFloat("Wind Speed", &windSpeed, 0.0f, 10.0f);
-		ImGui::SliderInt("GRASS", &grassCount, 500000, 20000000);
+		ImGui::SliderInt("GRASS", &grassCount, 100000, 1000000);
 		ImGui::End();
 
 		// Actually render IMGUI elements using OpenGL

@@ -241,15 +241,16 @@ int main() {
 	srand(static_cast<unsigned int>(glfwGetTime())); // initialize random seed
 	for (unsigned int i = 0; i < grassCount; i++)
 	{
+		int randy = rand();
 		glm::mat4 model = glm::mat4(1.0f);
-		glm::vec3 displacement = glm::vec3(rand() % 5000 / 100.0f - 25.0f, 0, rand() % 5000 / 100.0f - 25.0f);
+		glm::vec3 displacement = glm::vec3(randy % 5000 / 100.0f - 25.0f, 0, rand() % 5000 / 100.0f - 25.0f);
 		model = glm::translate(model, displacement);
 
-		float scale = static_cast<float>(rand() % 18 + 8.0);
+		float scale = static_cast<float>(randy % 18 + 8.0);
 		model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(1.0f, 0.5f, 2.0f) / scale);
+		model = glm::scale(model, glm::vec3(1.0f, 0.5f, 1.25f) / scale);
 
-		float rotAngle = static_cast<float>((rand() % 360));
+		float rotAngle = static_cast<float>((randy % 360));
 		model = glm::rotate(model, rotAngle, glm::vec3(0.0f, 0.0f, 1.0f));
 
 		modelMatrices[i] = model;
@@ -450,16 +451,17 @@ int main() {
 
 		glBindVertexArray(treeVAO);
 		//treeTex.Bind(GL_TEXTURE4);
-		glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+		//glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
 		testShader.use();
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 2.0f)); // translate it down so it's at the center of the scene
+		//model = glm::scale(model, glm::vec3(2.0f, 2.0f, 2.0f));
 		testShader.setMat4("model", model);
 		testChair.Draw(testShader);
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
-		//model = glm::scale(model, glm::vec3(0.01f, 0.01f, 0.01f));
+		//model = glm::scale(model, glm::vec3(2.0f, 2.0f, 2.0f));
 		testShader.setMat4("model", model);
 		testFirepit.Draw(testShader);
 		testLogs.Draw(testShader);
@@ -488,6 +490,20 @@ int main() {
 		groundPlane.Bind(GL_TEXTURE0);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 
+		// Draw skybox as last
+		glDepthFunc(GL_LEQUAL);  // Change depth function so depth test passes when values are equal to depth buffer's content. Otherwise C U B E bug
+		skyboxTest.use();
+		view = glm::mat4(glm::mat3(camera.GetViewMatrix())); // Remove translation from the view matrix - it's the sky dummy, it doesn't move when you move
+		skyboxTest.setMat4("view", view);
+		skyboxTest.setMat4("projection", projection);
+		// skybox cube
+		glBindVertexArray(skyboxVAO);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glBindVertexArray(0);
+		glDepthFunc(GL_LESS); // Set depth function back to default just in case you need again for laterd
+
 		// render the fire quad - Olivia
 		fireShader.use();
 		fireShader.setMat4("VP", VP);
@@ -505,21 +521,7 @@ int main() {
 		fireNoise.Bind(GL_TEXTURE2);
 		fireGradient.Bind(GL_TEXTURE3);
 		glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-
-		// Draw skybox as last
-		glDepthFunc(GL_LEQUAL);  // Change depth function so depth test passes when values are equal to depth buffer's content. Otherwise C U B E bug
-		skyboxTest.use();
-		view = glm::mat4(glm::mat3(camera.GetViewMatrix())); // Remove translation from the view matrix - it's the sky dummy, it doesn't move when you move
-		skyboxTest.setMat4("view", view);
-		skyboxTest.setMat4("projection", projection);
-		// skybox cube
-		glBindVertexArray(skyboxVAO);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-		glBindVertexArray(0);
-		glDepthFunc(GL_LESS); // Set depth function back to default just in case you need again for later
-
+		
 		// Start drawing ImGUI
 		ImGui_ImplGlfw_NewFrame();
 		ImGui_ImplOpenGL3_NewFrame();

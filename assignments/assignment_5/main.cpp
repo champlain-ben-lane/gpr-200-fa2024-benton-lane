@@ -156,6 +156,7 @@ int main() {
 	Shader grassShader("assets/shaders/instancedGrass.vert", "assets/shaders/instancedGrass.frag");
 	Shader fireShader("assets/shaders/fireShader.vert", "assets/shaders/fireShader.frag");
 	//Shader treeShader("assets/shaders/treeShader.vert", "assets/shaders/treeShader.frag");
+	Shader groundShader("assets/shaders/groundPlane.vert", "assets/shaders/groundPlane.frag");
 
 	float skyboxVertices[] = {
 		// positions          
@@ -212,7 +213,7 @@ int main() {
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
-	// load textures
+	// load skybox textures
 	vector<std::string> faces
 	{
 		("assets/textures/Skybox/night_right.jpg"),
@@ -255,7 +256,7 @@ int main() {
 	}
 
 	// configure instanced array
-   // -------------------------
+	// -------------------------
 	unsigned int buffer;
 	glGenBuffers(1, &buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, buffer);
@@ -302,6 +303,40 @@ int main() {
 	glGenVertexArrays(1, &lightCubeVAO);
 	glBindVertexArray(lightCubeVAO);
 
+	// Time to set up a ground plane for...the ground - Ben
+	//---------------------------
+
+	// set up vertex data (and buffer(s)) and configure vertex attributes
+	// ------------------------------------------------------------------
+	float planeVertices[] = {
+		// positions            // normals         // texcoords
+		 10.0f, -0.5f,  10.0f,  0.0f, 1.0f, 0.0f,  10.0f,  0.0f,
+		-10.0f, -0.5f,  10.0f,  0.0f, 1.0f, 0.0f,   0.0f,  0.0f,
+		-10.0f, -0.5f, -10.0f,  0.0f, 1.0f, 0.0f,   0.0f, 10.0f,
+
+		 10.0f, -0.5f,  10.0f,  0.0f, 1.0f, 0.0f,  10.0f,  0.0f,
+		-10.0f, -0.5f, -10.0f,  0.0f, 1.0f, 0.0f,   0.0f, 10.0f,
+		 10.0f, -0.5f, -10.0f,  0.0f, 1.0f, 0.0f,  10.0f, 10.0f
+	};
+	// plane VAO
+	unsigned int planeVAO, planeVBO;
+	glGenVertexArrays(1, &planeVAO);
+	glGenBuffers(1, &planeVBO);
+	glBindVertexArray(planeVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, planeVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices), planeVertices, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	glBindVertexArray(0);
+
+	t::Texture groundPlane("assets/textures/groundPlane.jpg", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT);
+
+	groundShader.use();
+	groundShader.setInt("texture1", 0);
 
 	// Fiyah stuff - Olivia
 	// --------------------------
@@ -344,7 +379,7 @@ int main() {
 		-1.0f, 5.0f, -10.0f, 0.0f, 1.0f,
 	};
 
-	//fire VAO and VBO
+	//Tree VAO and VBO
 	unsigned int treeVAO, treeVBO;
 
 	glGenVertexArrays(1, &treeVAO);
@@ -441,6 +476,17 @@ int main() {
 			glBindVertexArray(0);
 		}
 		// End of test code for model loading
+
+		// render ground plane - Ben
+		groundShader.use();
+		groundShader.setMat4("projection", projection);
+		groundShader.setMat4("view", view);
+		groundShader.setVec3("viewPos", camera.Position);
+		groundShader.setVec3("lightPos", lightPos);
+		glBindVertexArray(planeVAO);
+		glActiveTexture(GL_TEXTURE0);
+		groundPlane.Bind(GL_TEXTURE0);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
 
 		// render the fire quad - Olivia
 		fireShader.use();

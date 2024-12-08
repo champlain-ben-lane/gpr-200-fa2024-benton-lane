@@ -230,8 +230,8 @@ int main() {
 
 	//Model testModel("assets/models/backpack/backpack.obj");
 	Model testChair("assets/models/chair/chair.obj");
-	Model testFirepit("assets/models/firepit/firepit.fbx");
-	Model testLogs("assets/models/logs.fbx");
+	Model testFirepit("assets/models/firepit/pit.obj");
+	Model testLogs("assets/models/logs/logs.obj");
 	Model testGrass("assets/models/grass2.fbx");
 
 	//grass instancing work
@@ -424,7 +424,7 @@ int main() {
 		testChair.Draw(testShader);
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
-		model = glm::scale(model, glm::vec3(0.01f, 0.01f, 0.01f));
+		//model = glm::scale(model, glm::vec3(0.01f, 0.01f, 0.01f));
 		testShader.setMat4("model", model);
 		testFirepit.Draw(testShader);
 		testLogs.Draw(testShader);

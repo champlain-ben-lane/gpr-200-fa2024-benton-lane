@@ -435,101 +435,101 @@ int main() {
 		// world transformation
 		glm::mat4 model = glm::mat4(1.0f);
 
-		// Start of test code for model loading
-		testShader.use();
-		testShader.setVec3("viewPos", camera.Position);
-		testShader.setMat4("projection", projection);
-		testShader.setMat4("view", view);
-		testShader.setVec3("lightColor", lightColor);
-		testShader.setVec3("lightPos", lightPos);
+		//// Start of test code for model loading
+		//testShader.use();
+		//testShader.setVec3("viewPos", camera.Position);
+		//testShader.setMat4("projection", projection);
+		//testShader.setMat4("view", view);
+		//testShader.setVec3("lightColor", lightColor);
+		//testShader.setVec3("lightPos", lightPos);
 
-		testShader.use();
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 2.0f));
-		testShader.setMat4("model", model);
-		testChair.Draw(testShader);
-		
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(1.5f, 0.0f, 1.5f)); 
-		model = glm::rotate(model, 45.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-		testShader.setMat4("model", model);
-		testChair.Draw(testShader);
-		
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); 
-		testShader.setMat4("model", model);
-		testFirepit.Draw(testShader);
-		testLogs.Draw(testShader);
+		//testShader.use();
+		//model = glm::mat4(1.0f);
+		//model = glm::translate(model, glm::vec3(0.0f, 0.0f, 2.0f));
+		//testShader.setMat4("model", model);
+		//testChair.Draw(testShader);
+		//
+		//model = glm::mat4(1.0f);
+		//model = glm::translate(model, glm::vec3(1.5f, 0.0f, 1.5f)); 
+		//model = glm::rotate(model, 45.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+		//testShader.setMat4("model", model);
+		//testChair.Draw(testShader);
+		//
+		//model = glm::mat4(1.0f);
+		//model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); 
+		//testShader.setMat4("model", model);
+		//testFirepit.Draw(testShader);
+		//testLogs.Draw(testShader);
 
-		//grass rendering
-		grassShader.use();
-		grassShader.setMat4("projection", projection);
-		grassShader.setMat4("view", view);
-		grassShader.setFloat("time", glfwGetTime());
-		grassShader.setVec3("lightPos", lightPos);
-		for (unsigned int i = 0; i < testGrass.meshes.size(); i++)
-		{
-			glBindVertexArray(testGrass.meshes[i].VAO);
-			glDrawElementsInstanced(GL_TRIANGLES, static_cast<unsigned int>(testGrass.meshes[i].indices.size()), GL_UNSIGNED_INT, 0, grassCount);
-			glBindVertexArray(0);
-		}
-		// End of test code for model loading
+		////grass rendering
+		//grassShader.use();
+		//grassShader.setMat4("projection", projection);
+		//grassShader.setMat4("view", view);
+		//grassShader.setFloat("time", glfwGetTime());
+		//grassShader.setVec3("lightPos", lightPos);
+		//for (unsigned int i = 0; i < testGrass.meshes.size(); i++)
+		//{
+		//	glBindVertexArray(testGrass.meshes[i].VAO);
+		//	glDrawElementsInstanced(GL_TRIANGLES, static_cast<unsigned int>(testGrass.meshes[i].indices.size()), GL_UNSIGNED_INT, 0, grassCount);
+		//	glBindVertexArray(0);
+		//}
+		//// End of test code for model loading
 
-		// render ground plane - Ben
-		groundShader.use();
-		groundShader.setMat4("projection", projection);
-		groundShader.setMat4("view", view);
-		groundShader.setVec3("viewPos", camera.Position);
-		groundShader.setVec3("lightColor", lightColor);
-		groundShader.setVec3("lightPos", lightPos);
-		glBindVertexArray(planeVAO);
-		glActiveTexture(GL_TEXTURE0);
-		groundPlane.Bind(GL_TEXTURE0);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
+		//// render ground plane - Ben
+		//groundShader.use();
+		//groundShader.setMat4("projection", projection);
+		//groundShader.setMat4("view", view);
+		//groundShader.setVec3("viewPos", camera.Position);
+		//groundShader.setVec3("lightColor", lightColor);
+		//groundShader.setVec3("lightPos", lightPos);
+		//glBindVertexArray(planeVAO);
+		//glActiveTexture(GL_TEXTURE0);
+		//groundPlane.Bind(GL_TEXTURE0);
+		//glDrawArrays(GL_TRIANGLES, 0, 6);
 
-		// Draw skybox as last
-		glDepthFunc(GL_LEQUAL);  // Change depth function so depth test passes when values are equal to depth buffer's content. Otherwise C U B E bug
-		skyboxTest.use();
-		glm::mat4 camView = glm::mat4(glm::mat3(camera.GetViewMatrix())); // Remove translation from the view matrix - it's the sky dummy, it doesn't move when you move
-		skyboxTest.setMat4("view", camView);
-		skyboxTest.setMat4("projection", projection);
-		// skybox cube
-		glBindVertexArray(skyboxVAO);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-		glBindVertexArray(0);
-		glDepthFunc(GL_LESS); // Set depth function back to default just in case you need again for laterd
+		//// Draw skybox as last
+		//glDepthFunc(GL_LEQUAL);  // Change depth function so depth test passes when values are equal to depth buffer's content. Otherwise C U B E bug
+		//skyboxTest.use();
+		//glm::mat4 camView = glm::mat4(glm::mat3(camera.GetViewMatrix())); // Remove translation from the view matrix - it's the sky dummy, it doesn't move when you move
+		//skyboxTest.setMat4("view", camView);
+		//skyboxTest.setMat4("projection", projection);
+		//// skybox cube
+		//glBindVertexArray(skyboxVAO);
+		//glActiveTexture(GL_TEXTURE0);
+		//glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+		//glDrawArrays(GL_TRIANGLES, 0, 36);
+		//glBindVertexArray(0);
+		//glDepthFunc(GL_LESS); // Set depth function back to default just in case you need again for laterd
 
-		// render the trees
+		//// render the trees
 
-		treeShader.use();
-		glDepthMask(GL_FALSE);
+		//treeShader.use();
+		//glDepthMask(GL_FALSE);
 
-		for (int i = 0; i < 3; i++) {
-			for (int j = 0; j < numTrees; j++) {
-				// calculate position of tree in a circle (w/ offset between rings)
-				float angle = j * 2.0f * 3.14159f / numTrees + (i * 2.0f * 3.14159f / (3.0f * numTrees));
-				glm::vec3 treePos = glm::vec3((radius + i * 1.5f) * cos(angle), 0.0f, (radius + i * 1.5f) * sin(angle));
+		//for (int i = 0; i < 3; i++) {
+		//	for (int j = 0; j < numTrees; j++) {
+		//		// calculate position of tree in a circle (w/ offset between rings)
+		//		float angle = j * 2.0f * 3.14159f / numTrees + (i * 2.0f * 3.14159f / (3.0f * numTrees));
+		//		glm::vec3 treePos = glm::vec3((radius + i * 1.5f) * cos(angle), 0.0f, (radius + i * 1.5f) * sin(angle));
 
-				// update model matrix
-				glm::mat4 treeModel = glm::translate(glm::mat4(1.0f), treePos);
-				glm::mat4 treeVP = projection * view * treeModel;
+		//		// update model matrix
+		//		glm::mat4 treeModel = glm::translate(glm::mat4(1.0f), treePos);
+		//		glm::mat4 treeVP = projection * view * treeModel;
 
-				// update shader uniforms
-				treeShader.setMat4("VP", treeVP);
-				treeShader.setVec3("BillboardPos", treePos);
-				treeShader.setVec2("BillboardSize", glm::vec2(7.5f, 7.5f));
-				treeShader.setVec3("CameraRight_worldspace", camera.Right);
-				treeShader.setVec3("CameraUp_worldspace", camera.Up);
+		//		// update shader uniforms
+		//		treeShader.setMat4("VP", treeVP);
+		//		treeShader.setVec3("BillboardPos", treePos);
+		//		treeShader.setVec2("BillboardSize", glm::vec2(7.5f, 7.5f));
+		//		treeShader.setVec3("CameraRight_worldspace", camera.Right);
+		//		treeShader.setVec3("CameraUp_worldspace", camera.Up);
 
-				// draw the tree
-				glBindVertexArray(treeVAO);
-				treeTex.Bind(GL_TEXTURE4);
-				glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-			}
-		}
-		glDepthMask(GL_TRUE);
+		//		// draw the tree
+		//		glBindVertexArray(treeVAO);
+		//		treeTex.Bind(GL_TEXTURE4);
+		//		glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+		//	}
+		//}
+		//glDepthMask(GL_TRUE);
 
 		// render the fire quad - Olivia
 		// 

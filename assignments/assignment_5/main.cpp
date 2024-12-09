@@ -52,12 +52,15 @@ float timeElapsed = 0.0f;
 glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
 glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
 
+// Tree Variables
+glm::vec3 treePos(0.0f, 0.0f, -10.0f);
+int numTrees = 15;
+float radius = 6.0f;
+
 
 // Fire Variables
 glm::vec3 firePos(0.0f, 0.0f, 0.0f);
 glm::vec3 fireColor(1.0f, 0.7f, 0.3f);
-
-glm::vec3 treePos(0.0f, 0.0f, -10.0f);
 
 // IMGui Variables
 float ambientStrength = 0.5;
@@ -471,6 +474,7 @@ int main() {
 		groundShader.setMat4("projection", projection);
 		groundShader.setMat4("view", view);
 		groundShader.setVec3("viewPos", camera.Position);
+		groundShader.setVec3("lightColor", lightColor);
 		groundShader.setVec3("lightPos", lightPos);
 		glBindVertexArray(planeVAO);
 		glActiveTexture(GL_TEXTURE0);
@@ -493,22 +497,34 @@ int main() {
 
 		// render the trees
 
-		// view-projection matrix
-		//add instancing here
-		glm::mat4 treeModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -1.5f));
-		glm::mat4 treeVP = projection * view * treeModel;
-
 		treeShader.use();
-		treeShader.setMat4("VP", treeVP);
-		treeShader.setVec3("BillboardPos", treePos);
-		treeShader.setVec2("BillboardSize", glm::vec2(7.5f, 7.5f));
-		treeShader.setVec3("CameraRight_worldspace", camera.Right);
-		treeShader.setVec3("CameraUp_worldspace", camera.Up);
-		treeShader.setFloat("timeElapsed", timeElapsed);
 
-		glBindVertexArray(treeVAO);
-		treeTex.Bind(GL_TEXTURE4);
-		glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < numTrees; j++) {
+				// calculate position of tree in a circle (w/ offset between rings)
+				float angle = j * 2.0f * 3.14159f / numTrees + (i * 2.0f * 3.14159f / (3.0f * numTrees));
+				glm::vec3 treePos = glm::vec3((radius + i * 1.5f) * cos(angle), 0.0f, (radius + i * 1.5f) * sin(angle));
+
+				// update model matrix
+				glm::mat4 treeModel = glm::translate(glm::mat4(1.0f), treePos);
+				glm::mat4 treeVP = projection * view * treeModel;
+
+				// update shader uniforms
+				treeShader.setMat4("VP", treeVP);
+				treeShader.setVec3("BillboardPos", treePos);
+				treeShader.setVec2("BillboardSize", glm::vec2(7.5f, 7.5f));
+				treeShader.setVec3("CameraRight_worldspace", camera.Right);
+				treeShader.setVec3("CameraUp_worldspace", camera.Up);
+				treeShader.setVec3("lightPos", lightPos);
+				treeShader.setVec3("viewPos", camera.Position);
+				treeShader.setVec3("lightColor", lightColor);
+
+				// draw the tree
+				glBindVertexArray(treeVAO);
+				treeTex.Bind(GL_TEXTURE4);
+				glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+			}
+		}
 
 		// render the fire quad - Olivia
 		// 

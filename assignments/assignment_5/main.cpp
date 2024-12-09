@@ -69,7 +69,7 @@ float specularStrength = 0.5;
 int shininessStrength = 250;
 float flickerStrength = 0.5;
 float windSpeed = 1.0;
-int grassCount = 100000;
+int grassCount = 500000;
 
 //Leaving this here for the time being for testing purposes: likely want to add to texture.h for clean up purposes
 // loads a cubemap texture from 6 individual texture faces

@@ -54,7 +54,7 @@ glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
 
 // Tree Variables
 glm::vec3 treePos(0.0f, 0.0f, -10.0f);
-int numTrees = 15;
+int numTrees = 20;
 float radius = 6.0f;
 
 
@@ -498,6 +498,7 @@ int main() {
 		// render the trees
 
 		treeShader.use();
+		glDepthMask(GL_FALSE);
 
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < numTrees; j++) {
@@ -515,9 +516,6 @@ int main() {
 				treeShader.setVec2("BillboardSize", glm::vec2(7.5f, 7.5f));
 				treeShader.setVec3("CameraRight_worldspace", camera.Right);
 				treeShader.setVec3("CameraUp_worldspace", camera.Up);
-				treeShader.setVec3("lightPos", lightPos);
-				treeShader.setVec3("viewPos", camera.Position);
-				treeShader.setVec3("lightColor", lightColor);
 
 				// draw the tree
 				glBindVertexArray(treeVAO);
@@ -525,6 +523,7 @@ int main() {
 				glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 			}
 		}
+		glDepthMask(GL_TRUE);
 
 		// render the fire quad - Olivia
 		// 

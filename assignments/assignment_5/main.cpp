@@ -49,7 +49,7 @@ float lastFrame = 0.0f;
 float timeElapsed = 0.0f;
 
 // Lighting
-glm::vec3 lightPos(0.0f, 0.0f, 0.5f);
+glm::vec3 lightPos(0.0f, 0.7f, 0.0f);
 glm::vec3 lightColor(1.0f, 0.7f, 0.3f);
 
 // Tree Variables
@@ -445,13 +445,18 @@ int main() {
 
 		testShader.use();
 		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 2.0f)); // translate it down so it's at the center of the scene
-		//model = glm::scale(model, glm::vec3(2.0f, 2.0f, 2.0f));
+		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 2.0f));
 		testShader.setMat4("model", model);
 		testChair.Draw(testShader);
+		
 		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
-		//model = glm::scale(model, glm::vec3(2.0f, 2.0f, 2.0f));
+		model = glm::translate(model, glm::vec3(1.5f, 0.0f, 1.5f)); 
+		model = glm::rotate(model, 45.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+		testShader.setMat4("model", model);
+		testChair.Draw(testShader);
+		
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); 
 		testShader.setMat4("model", model);
 		testFirepit.Draw(testShader);
 		testLogs.Draw(testShader);
@@ -461,6 +466,7 @@ int main() {
 		grassShader.setMat4("projection", projection);
 		grassShader.setMat4("view", view);
 		grassShader.setFloat("time", glfwGetTime());
+		grassShader.setVec3("lightPos", lightPos);
 		for (unsigned int i = 0; i < testGrass.meshes.size(); i++)
 		{
 			glBindVertexArray(testGrass.meshes[i].VAO);

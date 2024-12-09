@@ -1,3 +1,5 @@
+//made by Olivia
+
 #version 330 core
 
 layout(location = 0) in vec3 treeVertices;
@@ -16,8 +18,8 @@ void main() {
     vec3 vertexPosition_worldspace = 
         BillboardPos
         + CameraRight_worldspace * treeVertices.x * BillboardSize.x
-        + vec3(0,1,0) * fireVertices.y * BillboardSize.y;
+        + vec3(0,1,0) * treeVertices.y * BillboardSize.y;
 
     gl_Position = VP * vec4(vertexPosition_worldspace, 1.0f);
-    FragPos = treeVertices.xy + vec2(0.5, 0.5);
+    FragPos = treeVertices.xy + vec2(0.5, 0.0);
 }

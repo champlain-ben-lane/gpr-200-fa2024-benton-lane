@@ -52,6 +52,12 @@ float timeElapsed = 0.0f;
 glm::vec3 lightPos(0.0f, 0.0f, 0.5f);
 glm::vec3 lightColor(1.0f, 0.7f, 0.3f);
 
+// Tree Variables
+glm::vec3 treePos(0.0f, 0.0f, -10.0f);
+int numTrees = 20;
+float radius = 6.0f;
+
+
 // Fire Variables
 glm::vec3 firePos(0.0f, 0.0f, 0.0f);
 glm::vec3 fireColor(1.0f, 0.7f, 0.3f);
@@ -63,7 +69,7 @@ float specularStrength = 0.5;
 int shininessStrength = 250;
 float flickerStrength = 0.5;
 float windSpeed = 1.0;
-int grassCount = 500000;
+int grassCount = 100000;
 
 //Leaving this here for the time being for testing purposes: likely want to add to texture.h for clean up purposes
 // loads a cubemap texture from 6 individual texture faces
@@ -154,7 +160,7 @@ int main() {
 	Shader skyboxTest("assets/shaders/skyboxTest.vert", "assets/shaders/skyboxTest.frag");
 	Shader grassShader("assets/shaders/instancedGrass.vert", "assets/shaders/instancedGrass.frag");
 	Shader fireShader("assets/shaders/fireShader.vert", "assets/shaders/fireShader.frag");
-	//Shader treeShader("assets/shaders/treeShader.vert", "assets/shaders/treeShader.frag");
+	Shader treeShader("assets/shaders/treeShader.vert", "assets/shaders/treeShader.frag");
 	Shader groundShader("assets/shaders/groundPlane.vert", "assets/shaders/groundPlane.frag");
 
 	float skyboxVertices[] = {
@@ -289,7 +295,7 @@ int main() {
 	}
 	t::Texture fireNoise("assets/textures/fire_noise.png", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT);
 	t::Texture fireGradient("assets/textures/fire_gradient.png", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT);
-	//t::Texture treeTex("assets/textures/tree.png", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT);
+	t::Texture treeTex("assets/textures/tree.png", GL_LINEAR_MIPMAP_LINEAR, GL_CLAMP_TO_EDGE);
 
 	// shader configuration
 	skyboxTest.use();
@@ -297,6 +303,8 @@ int main() {
 	fireShader.use();
 	fireShader.setInt("noiseTex", 2);
 	fireShader.setInt("gradientTex", 3);
+	treeShader.use();
+	treeShader.setInt("treeTex", 4);
 
 	// second, configure the light's VAO (VBO stays the same; the vertices are the same for the light object which is also a 3D cube)
 	unsigned int lightCubeVAO;
@@ -373,10 +381,10 @@ int main() {
 	// tree vertices
 	float treeVertices[] = {
 		// Positions          Texture Coords
-		-1.0f, 0.0f, -10.0f, 0.0f, 0.0f,
-		1.0f, 0.0f, -10.0f, 1.0f, 0.0f,
-		1.0f, 5.0f, -10.0f, 1.0f, 1.0f,
-		-1.0f, 5.0f, -10.0f, 0.0f, 1.0f,
+		-0.5f, 0.0f, 0.0f, 0.0f, 0.0f,
+		 0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
+		 0.5f, 1.0f, 0.0f, 1.0f, 1.0f,
+		-0.5f, 1.0f, 0.0f, 0.0f, 1.0f,
 	};
 
 	//Tree VAO and VBO
@@ -434,23 +442,6 @@ int main() {
 		testShader.setMat4("view", view);
 		testShader.setVec3("lightColor", lightColor);
 		testShader.setVec3("lightPos", lightPos);
-		// view-projection and rotation matrix
-		glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		glm::mat4 fireModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.5f, 0.0f));
-		glm::mat4 VP = projection * view * fireModel;
-
-		// render the trees
-		//treeShader.use();
-		//treeShader.setMat4("VP", VP);
-		//treeShader.setVec3("BillboardPos", treePos);
-		//treeShader.setVec2("BillboardSize", glm::vec2(5.0f, 2.0f));
-		//treeShader.setVec3("CameraRight_worldspace", cameraFront);
-		//treeShader.setVec3("CameraUp_worldspace", cameraUp);
-		//treeShader.setFloat("timeElapsed", timeElapsed);
-
-		glBindVertexArray(treeVAO);
-		//treeTex.Bind(GL_TEXTURE4);
-		//glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
 		testShader.use();
 		model = glm::mat4(1.0f);
@@ -483,6 +474,7 @@ int main() {
 		groundShader.setMat4("projection", projection);
 		groundShader.setMat4("view", view);
 		groundShader.setVec3("viewPos", camera.Position);
+		groundShader.setVec3("lightColor", lightColor);
 		groundShader.setVec3("lightPos", lightPos);
 		glBindVertexArray(planeVAO);
 		glActiveTexture(GL_TEXTURE0);
@@ -492,8 +484,8 @@ int main() {
 		// Draw skybox as last
 		glDepthFunc(GL_LEQUAL);  // Change depth function so depth test passes when values are equal to depth buffer's content. Otherwise C U B E bug
 		skyboxTest.use();
-		view = glm::mat4(glm::mat3(camera.GetViewMatrix())); // Remove translation from the view matrix - it's the sky dummy, it doesn't move when you move
-		skyboxTest.setMat4("view", view);
+		glm::mat4 camView = glm::mat4(glm::mat3(camera.GetViewMatrix())); // Remove translation from the view matrix - it's the sky dummy, it doesn't move when you move
+		skyboxTest.setMat4("view", camView);
 		skyboxTest.setMat4("projection", projection);
 		// skybox cube
 		glBindVertexArray(skyboxVAO);
@@ -503,9 +495,44 @@ int main() {
 		glBindVertexArray(0);
 		glDepthFunc(GL_LESS); // Set depth function back to default just in case you need again for laterd
 
+		// render the trees
+
+		treeShader.use();
+		glDepthMask(GL_FALSE);
+
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < numTrees; j++) {
+				// calculate position of tree in a circle (w/ offset between rings)
+				float angle = j * 2.0f * 3.14159f / numTrees + (i * 2.0f * 3.14159f / (3.0f * numTrees));
+				glm::vec3 treePos = glm::vec3((radius + i * 1.5f) * cos(angle), 0.0f, (radius + i * 1.5f) * sin(angle));
+
+				// update model matrix
+				glm::mat4 treeModel = glm::translate(glm::mat4(1.0f), treePos);
+				glm::mat4 treeVP = projection * view * treeModel;
+
+				// update shader uniforms
+				treeShader.setMat4("VP", treeVP);
+				treeShader.setVec3("BillboardPos", treePos);
+				treeShader.setVec2("BillboardSize", glm::vec2(7.5f, 7.5f));
+				treeShader.setVec3("CameraRight_worldspace", camera.Right);
+				treeShader.setVec3("CameraUp_worldspace", camera.Up);
+
+				// draw the tree
+				glBindVertexArray(treeVAO);
+				treeTex.Bind(GL_TEXTURE4);
+				glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+			}
+		}
+		glDepthMask(GL_TRUE);
+
 		// render the fire quad - Olivia
+		// 
+		// view-projection matrix
+		glm::mat4 fireModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.5f, 0.0f));
+		glm::mat4 fireVP = projection * view * fireModel;
+
 		fireShader.use();
-		fireShader.setMat4("VP", VP);
+		fireShader.setMat4("VP", fireVP);
 		fireShader.setMat4("projection", projection);
 		fireShader.setVec3("BillboardPos", firePos);
 		fireShader.setVec2("BillboardSize", glm::vec2(0.85f, 0.85f));

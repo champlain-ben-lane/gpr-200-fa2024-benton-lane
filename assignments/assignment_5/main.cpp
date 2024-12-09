@@ -52,13 +52,13 @@ float timeElapsed = 0.0f;
 glm::vec3 lightPos(0.0f, 0.7f, 0.0f);
 glm::vec3 lightColor(1.0f, 0.7f, 0.3f);
 
-// Tree Variables
+// Tree Variables - Olivia
 glm::vec3 treePos(0.0f, 0.0f, -10.0f);
 int numTrees = 20;
 float radius = 6.0f;
 
 
-// Fire Variables
+// Fire Variables - Olivia
 glm::vec3 firePos(0.0f, 0.0f, 0.0f);
 glm::vec3 fireColor(1.0f, 0.7f, 0.3f);
 
@@ -293,18 +293,10 @@ int main() {
 
 		glBindVertexArray(0);
 	}
-	t::Texture fireNoise("assets/textures/fire_noise.png", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT);
-	t::Texture fireGradient("assets/textures/fire_gradient.png", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT);
-	t::Texture treeTex("assets/textures/tree.png", GL_LINEAR_MIPMAP_LINEAR, GL_CLAMP_TO_EDGE);
 
 	// shader configuration
 	skyboxTest.use();
 	skyboxTest.setInt("skybox", 0);
-	fireShader.use();
-	fireShader.setInt("noiseTex", 2);
-	fireShader.setInt("gradientTex", 3);
-	treeShader.use();
-	treeShader.setInt("treeTex", 4);
 
 	// second, configure the light's VAO (VBO stays the same; the vertices are the same for the light object which is also a 3D cube)
 	unsigned int lightCubeVAO;
@@ -346,6 +338,17 @@ int main() {
 	groundShader.use();
 	groundShader.setInt("texture1", 0);
 
+	// Textures and Shaders - Olivia
+	t::Texture fireNoise("assets/textures/fire_noise.png", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT);
+	t::Texture fireGradient("assets/textures/fire_gradient.png", GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT);
+	t::Texture treeTex("assets/textures/tree.png", GL_LINEAR_MIPMAP_LINEAR, GL_CLAMP_TO_EDGE);
+
+	fireShader.use();
+	fireShader.setInt("noiseTex", 2);
+	fireShader.setInt("gradientTex", 3);
+	treeShader.use();
+	treeShader.setInt("treeTex", 4);
+
 	// Fiyah stuff - Olivia
 	// --------------------------
 
@@ -375,7 +378,7 @@ int main() {
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 	glBindVertexArray(0);
 
-	// tree stuff - the Lorax
+	// tree stuff - the Lorax (Liv)
 	// ----------------------
 
 	// tree vertices
@@ -501,11 +504,14 @@ int main() {
 		glBindVertexArray(0);
 		glDepthFunc(GL_LESS); // Set depth function back to default just in case you need again for laterd
 
-		// render the trees
+		// render things with transparency
+		
+		// render the trees - Olivia
 
 		treeShader.use();
 		glDepthMask(GL_FALSE);
 
+		// throw em in a ring (or three)
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < numTrees; j++) {
 				// calculate position of tree in a circle (w/ offset between rings)
@@ -532,7 +538,7 @@ int main() {
 		glDepthMask(GL_TRUE);
 
 		// render the fire quad - Olivia
-		// 
+		
 		// view-projection matrix
 		glm::mat4 fireModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.5f, 0.0f));
 		glm::mat4 fireVP = projection * view * fireModel;

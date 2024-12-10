@@ -1,3 +1,5 @@
+// Made by Ben
+
 #include "texture.h"
 
 t::Texture::Texture(const char* filePath, int filterMode, int wrapMode)

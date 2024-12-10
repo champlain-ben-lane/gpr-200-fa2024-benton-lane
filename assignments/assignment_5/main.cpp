@@ -11,7 +11,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-// Ben stuff
+// Ben's library stuff
 #include "../core/bl_library/shader.h"
 #include "../core/bl_library/texture.h"
 #include "../core/bl_library/mesh.h"
@@ -33,22 +33,22 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow* window);
 
-// Screen settings
+// Screen settings - Ben
 const int SCREEN_WIDTH = 1080;
 const int SCREEN_HEIGHT = 720;
 
-// Camera settings
+// Camera settings - Ben
 Camera camera(glm::vec3(0.0f, 1.2f, 3.0f));
 float lastX = (float)SCREEN_WIDTH / 2.0;
 float lastY = (float)SCREEN_HEIGHT / 2.0;
 bool firstMouse = true;
 
-// Timing
+// Timing - Ben
 float deltaTime = 0.0f;	// Time between current frame and last frame
 float lastFrame = 0.0f;
 float timeElapsed = 0.0f;
 
-// Lighting
+// Lighting - Ben
 glm::vec3 lightPos(0.0f, 0.7f, 0.0f);
 glm::vec3 lightColor(1.0f, 0.7f, 0.3f);
 
@@ -57,12 +57,11 @@ glm::vec3 treePos(0.0f, 0.0f, -10.0f);
 int numTrees = 20;
 float radius = 6.0f;
 
-
 // Fire Variables - Olivia
 glm::vec3 firePos(0.0f, 0.0f, 0.0f);
 glm::vec3 fireColor(1.0f, 0.7f, 0.3f);
 
-// IMGui Variables
+// IMGui Variables - Ben
 float ambientStrength = 0.5;
 float diffuseStrength = 0.5;
 float specularStrength = 0.5;
@@ -71,7 +70,7 @@ float flickerStrength = 0.5;
 float windSpeed = 1.0;
 int grassCount = 500000;
 
-//Leaving this here for the time being for testing purposes: likely want to add to texture.h for clean up purposes
+// Cubemapping loading code; originally wanted to have this down below the render loop but C++ disagreed - Ben
 // loads a cubemap texture from 6 individual texture faces
 // order:
 // +X (right)
@@ -163,6 +162,7 @@ int main() {
 	Shader treeShader("assets/shaders/treeShader.vert", "assets/shaders/treeShader.frag");
 	Shader groundShader("assets/shaders/groundPlane.vert", "assets/shaders/groundPlane.frag");
 
+	// Ben
 	float skyboxVertices[] = {
 		// positions          
 		-1.0f,  1.0f, -1.0f,
@@ -208,7 +208,7 @@ int main() {
 		 1.0f, -1.0f,  1.0f
 	};
 
-	// skybox VAO
+	// skybox VAO - Ben
 	unsigned int skyboxVAO, skyboxVBO;
 	glGenVertexArrays(1, &skyboxVAO);
 	glGenBuffers(1, &skyboxVBO);
@@ -218,7 +218,7 @@ int main() {
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
-	// load skybox textures
+	// load skybox textures - Ben
 	vector<std::string> faces
 	{
 		("assets/textures/Skybox/night_right.jpg"),
@@ -231,10 +231,9 @@ int main() {
 
 	unsigned int cubemapTexture = loadCubemap(faces);
 
-	// Load in models
+	// Load in models - Ben
 	// -----------------------------
 
-	//Model testModel("assets/models/backpack/backpack.obj");
 	Model testChair("assets/models/chair/chair.obj");
 	Model testFirepit("assets/models/firepit/pit.obj");
 	Model testLogs("assets/models/logs/logs.obj");
@@ -294,11 +293,11 @@ int main() {
 		glBindVertexArray(0);
 	}
 
-	// shader configuration
+	// Skybox shader configuration - Ben
 	skyboxTest.use();
 	skyboxTest.setInt("skybox", 0);
 
-	// second, configure the light's VAO (VBO stays the same; the vertices are the same for the light object which is also a 3D cube)
+	// second, configure the light's VAO (VBO stays the same; the vertices are the same for the light object which is also a 3D cube) - Ben
 	unsigned int lightCubeVAO;
 	glGenVertexArrays(1, &lightCubeVAO);
 	glBindVertexArray(lightCubeVAO);
@@ -306,7 +305,7 @@ int main() {
 	// Time to set up a ground plane for...the ground - Ben
 	//---------------------------
 
-	// set up vertex data (and buffer(s)) and configure vertex attributes
+	// set up vertex data (and buffer(s)) and configure vertex attributes - Ben
 	// ------------------------------------------------------------------
 	float planeVertices[] = {
 		// positions            // normals         // texcoords
@@ -318,7 +317,7 @@ int main() {
 		-25.0f, 0.0f, -25.0f,  0.0f, 1.0f, 0.0f,   0.0f, 10.0f,
 		 25.0f, 0.0f, -25.0f,  0.0f, 1.0f, 0.0f,  10.0f, 10.0f
 	};
-	// plane VAO
+	// plane VAO - Ben
 	unsigned int planeVAO, planeVBO;
 	glGenVertexArrays(1, &planeVAO);
 	glGenBuffers(1, &planeVBO);
@@ -451,15 +450,15 @@ int main() {
 		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 2.0f));
 		testShader.setMat4("model", model);
 		testChair.Draw(testShader);
-		
+
 		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(1.5f, 0.0f, 1.5f)); 
+		model = glm::translate(model, glm::vec3(1.5f, 0.0f, 1.5f));
 		model = glm::rotate(model, 45.0f, glm::vec3(0.0f, 1.0f, 0.0f));
 		testShader.setMat4("model", model);
 		testChair.Draw(testShader);
-		
+
 		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); 
+		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
 		testShader.setMat4("model", model);
 		testFirepit.Draw(testShader);
 		testLogs.Draw(testShader);
@@ -490,22 +489,22 @@ int main() {
 		groundPlane.Bind(GL_TEXTURE0);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 
-		// Draw skybox as last
+		// Draw skybox as last (except before transparents) - Ben
 		glDepthFunc(GL_LEQUAL);  // Change depth function so depth test passes when values are equal to depth buffer's content. Otherwise C U B E bug
 		skyboxTest.use();
 		glm::mat4 camView = glm::mat4(glm::mat3(camera.GetViewMatrix())); // Remove translation from the view matrix - it's the sky dummy, it doesn't move when you move
 		skyboxTest.setMat4("view", camView);
 		skyboxTest.setMat4("projection", projection);
-		// skybox cube
+		// skybox cube - Ben
 		glBindVertexArray(skyboxVAO);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 		glBindVertexArray(0);
-		glDepthFunc(GL_LESS); // Set depth function back to default just in case you need again for laterd
+		glDepthFunc(GL_LESS); // Set depth function back to default just in case you need again for later
 
-		// render things with transparency
-		
+		// *Now* we render things with transparency
+
 		// render the trees - Olivia
 
 		treeShader.use();
@@ -538,7 +537,7 @@ int main() {
 		glDepthMask(GL_TRUE);
 
 		// render the fire quad - Olivia
-		
+
 		// view-projection matrix
 		glm::mat4 fireModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.5f, 0.0f));
 		glm::mat4 fireVP = projection * view * fireModel;
@@ -560,12 +559,12 @@ int main() {
 		fireGradient.Bind(GL_TEXTURE3);
 		glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
-		// Start drawing ImGUI
+		// Start drawing ImGUI - Ben
 		ImGui_ImplGlfw_NewFrame();
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui::NewFrame();
 
-		// Create a window called Settings
+		// Create a window called Settings - Ben
 		ImGui::Begin("Settings");
 		ImGui::DragFloat3("Light Position", &lightPos.x, 0.1f);
 		ImGui::ColorEdit3("Light Color", &lightColor.r);
@@ -574,7 +573,7 @@ int main() {
 		ImGui::SliderInt("GRASS", &grassCount, 10000, 500000);
 		ImGui::End();
 
-		// Actually render IMGUI elements using OpenGL
+		// Actually render IMGUI elements using OpenGL - Ben
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
@@ -584,16 +583,13 @@ int main() {
 		glfwPollEvents();
 	}
 
-	// De-allocate all resources once they've outlived their purpose: NO MEMORY LEAKS!
-	// ------------------------------------------------------------------------
-
 	// GLFW: Terminate, clearing all previously allocated GLFW resources.
 	// ------------------------------------------------------------------
 	glfwTerminate();
 	return 0;
 }
 
-// Process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
+// Process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly - Ben
 // ---------------------------------------------------------------------------------------------------------
 void processInput(GLFWwindow* window)
 {
@@ -617,7 +613,7 @@ void processInput(GLFWwindow* window)
 		camera.Position += glm::normalize(glm::cross(camera.Front, camera.Right)) * cameraSpeed;
 }
 
-// GLFW: Whenever the window size changed (by OS or user resize) this callback function executes
+// GLFW: Whenever the window size changed (by OS or user resize) this callback function executes - Ben
 // ---------------------------------------------------------------------------------------------
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -626,7 +622,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 	glViewport(0, 0, width, height);
 }
 
-// GLFW: Whenever the mouse moves, this callback is called
+// GLFW: Whenever the mouse moves, this callback is called - Ben
 // -------------------------------------------------------
 void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 {
@@ -659,7 +655,7 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 	camera.ProcessMouseMovement(xoffset, yoffset);
 }
 
-// GLFW: Whenever the mouse scroll wheel scrolls, this callback is called
+// GLFW: Whenever the mouse scroll wheel scrolls, this callback is called - Ben
 // ----------------------------------------------------------------------
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {

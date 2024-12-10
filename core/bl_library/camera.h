@@ -1,3 +1,5 @@
+// Made by Ben
+
 #ifndef CAMERA_H
 #define CAMERA_H
 

@@ -1,3 +1,5 @@
+// Made by Ben
+
 #pragma once
 
 #ifndef MESH_H
@@ -28,7 +30,7 @@ struct Vertex {
 	glm::vec3 Tangent;
 	// Bitangent
 	glm::vec3 Bitangent;
-		// Bone indexes which have influence on the vertex
+	// Bone indexes which have influence on the vertex
 	int m_BoneIDs[MAX_BONE_INFLUENCE];
 	float m_Weights[MAX_BONE_INFLUENCE];
 };
@@ -41,23 +43,23 @@ struct Texture {
 
 class Mesh {
 public:
-    // mesh Data
-    vector<Vertex>       vertices;
-    vector<unsigned int> indices;
-    vector<Texture>      textures;
-    unsigned int VAO;
+	// mesh Data
+	vector<Vertex>       vertices;
+	vector<unsigned int> indices;
+	vector<Texture>      textures;
+	unsigned int VAO;
 
-    // constructor
-    Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture> textures);
+	// constructor
+	Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture> textures);
 
-    // render the mesh
-    void Draw(Shader& shader);
+	// render the mesh
+	void Draw(Shader& shader);
 
 private:
-    // render data 
-    unsigned int VBO, EBO;
+	// render data 
+	unsigned int VBO, EBO;
 
-    // initializes all the buffer objects/arrays
+	// initializes all the buffer objects/arrays
 	void setupMesh();
 };
 #endif

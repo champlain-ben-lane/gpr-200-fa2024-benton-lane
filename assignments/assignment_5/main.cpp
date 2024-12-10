@@ -68,6 +68,7 @@ float specularStrength = 0.5;
 int shininessStrength = 250;
 float flickerStrength = 0.5;
 float windSpeed = 1.0;
+//IMGui Grass - Sam
 int grassCount = 500000;
 
 // Cubemapping loading code; originally wanted to have this down below the render loop but C++ disagreed - Ben
@@ -232,28 +233,32 @@ int main() {
 	unsigned int cubemapTexture = loadCubemap(faces);
 
 	// Load in models - Ben
-	// -----------------------------
+	// Models produced by Olivia
+	// Mtl files/uv mapping done by Sam
 
 	Model testChair("assets/models/chair/chair.obj");
 	Model testFirepit("assets/models/firepit/pit.obj");
 	Model testLogs("assets/models/logs/logs.obj");
 	Model testGrass("assets/models/grass2.fbx");
 
-	//grass instancing work
+	//Instanced Grass model matrix setup - Sam
 	glm::mat4* modelMatrices;
 	modelMatrices = new glm::mat4[grassCount];
 	srand(static_cast<unsigned int>(glfwGetTime())); // initialize random seed
 	for (unsigned int i = 0; i < grassCount; i++)
 	{
 		int randy = rand();
+		//random position
 		glm::mat4 model = glm::mat4(1.0f);
 		glm::vec3 displacement = glm::vec3(randy % 5000 / 100.0f - 25.0f, 0, rand() % 5000 / 100.0f - 25.0f);
 		model = glm::translate(model, displacement);
 
+		//random scale
 		float scale = static_cast<float>(randy % 18 + 8.0);
 		model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(1.0f, 0.5f, 1.25f) / scale);
 
+		//random rotation
 		float rotAngle = static_cast<float>((randy % 360));
 		model = glm::rotate(model, rotAngle, glm::vec3(0.0f, 0.0f, 1.0f));
 
@@ -437,7 +442,7 @@ int main() {
 		// world transformation
 		glm::mat4 model = glm::mat4(1.0f);
 
-		// Start of test code for model loading
+		//Code for model rendering - mix of Ben and Sam
 		testShader.use();
 		testShader.setVec3("viewPos", camera.Position);
 		testShader.setMat4("projection", projection);
@@ -445,25 +450,28 @@ int main() {
 		testShader.setVec3("lightColor", lightColor);
 		testShader.setVec3("lightPos", lightPos);
 
+		//chair 1
 		testShader.use();
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 2.0f));
 		testShader.setMat4("model", model);
 		testChair.Draw(testShader);
 
+		//chair 2
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, glm::vec3(1.5f, 0.0f, 1.5f));
 		model = glm::rotate(model, 45.0f, glm::vec3(0.0f, 1.0f, 0.0f));
 		testShader.setMat4("model", model);
 		testChair.Draw(testShader);
 
+		//firepit and logs use same matrix
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
 		testShader.setMat4("model", model);
 		testFirepit.Draw(testShader);
 		testLogs.Draw(testShader);
 
-		//grass rendering
+		//Instanced Grass Rendering - Sam
 		grassShader.use();
 		grassShader.setMat4("projection", projection);
 		grassShader.setMat4("view", view);
@@ -475,7 +483,6 @@ int main() {
 			glDrawElementsInstanced(GL_TRIANGLES, static_cast<unsigned int>(testGrass.meshes[i].indices.size()), GL_UNSIGNED_INT, 0, grassCount);
 			glBindVertexArray(0);
 		}
-		// End of test code for model loading
 
 		// render ground plane - Ben
 		groundShader.use();

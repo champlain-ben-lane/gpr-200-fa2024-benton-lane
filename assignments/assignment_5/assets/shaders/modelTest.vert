@@ -1,4 +1,5 @@
 // Made by Ben
+// Normal Mapping by Sam
 
 #version 330 core
 layout (location = 0) in vec3 aPos;
@@ -27,8 +28,7 @@ void main()
     mat3 normalMatrix = transpose(inverse(mat3(model)));
     vec3 T = normalize(normalMatrix * aTan);
     vec3 N = normalize(normalMatrix * aNormal);    
-    vec3 B = normalize(normalMatrix * aBitan);      
-    //T = normalize(T - dot(T, N) * N);
+    vec3 B = normalize(normalMatrix * aBitan);
     mat3 TBN = transpose(mat3(T, B, N));   
 
     //calculates lighting elements based on normal matrix. passed to frag shader

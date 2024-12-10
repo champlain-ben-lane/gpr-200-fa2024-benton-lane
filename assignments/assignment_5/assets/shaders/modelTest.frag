@@ -1,4 +1,5 @@
 // Made by Ben
+// Normal Mapping by Sam
 
 #version 330 core
 out vec4 FragColor;
@@ -45,8 +46,6 @@ void main()
     vec4 lightingInfo = vec4((ambient + diffuse + specular), 1.0);
     
     vec4 result = lightingInfo * texInfo;
-    //vec4 result = vec4(norm, 1.0); //normal map testing
-    //vec4 result = lightingInfo; //non-texture testing
 
     FragColor = result;
 }
